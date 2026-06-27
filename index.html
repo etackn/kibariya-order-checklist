@@ -1383,6 +1383,15 @@
       if (!box.children.length) addIngredientRow();
     }
 
+    function refreshIngredientAssigneeOptions(preferredAssignee = "") {
+      document.querySelectorAll(".ingredient-assignee").forEach(select => {
+        const current = select.value;
+        const nextValue = current && assigneeById(current).id !== "unknown" ? current : preferredAssignee;
+        select.innerHTML = assigneeOptions(nextValue);
+        select.value = nextValue;
+      });
+    }
+
     function addIngredientRow(name = "", qty = "", assignee = "") {
       const box = document.getElementById("ingredientRows");
       const selectedAssignee = assignee || (name ? ruleForIngredient(name) : "");
@@ -1539,6 +1548,7 @@
       save(STORAGE_KEYS.companies, state.companies);
       clearCompanyForm();
       render();
+      refreshIngredientAssigneeOptions(index < 0 ? id : "");
       toast("発注会社を保存しました");
     }
 
@@ -1556,6 +1566,7 @@
       state.companies = state.companies.filter(company => company.id !== id);
       save(STORAGE_KEYS.companies, state.companies);
       render();
+      refreshIngredientAssigneeOptions();
       toast("発注会社を削除しました");
     }
 

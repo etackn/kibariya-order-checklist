@@ -1105,6 +1105,18 @@
       const value = String(text || "").trim();
       if (!value) return null;
 
+      try {
+        const url = new URL(value);
+        const queryData = url.searchParams.get("k");
+        if (queryData) return decodeSharePayload(queryData);
+      } catch (error) {}
+
+      const queryIndex = value.indexOf("?k=");
+      if (queryIndex >= 0) {
+        const queryValue = value.slice(queryIndex + 3).split("&")[0].split("#")[0];
+        return decodeSharePayload(decodeURIComponent(queryValue));
+      }
+
       const hashIndex = value.indexOf("#");
       if (hashIndex >= 0) return payloadFromSharedText(value.slice(hashIndex));
 
@@ -1129,11 +1141,12 @@
       save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
     }
 
-    function applySharedDataFromHash() {
-      if (!location.hash) return false;
+    function applySharedDataFromUrl() {
+      const queryData = new URLSearchParams(location.search).get("k");
+      const sharedText = queryData ? `KIBARIYA1.${queryData}` : location.hash;
+      if (!sharedText) return false;
       try {
-        applySharedPayload(payloadFromSharedText(location.hash));
-        history.replaceState(null, "", location.href.split("#")[0]);
+        applySharedPayload(payloadFromSharedText(sharedText));
         return true;
       } catch (error) {
         return "error";
@@ -1141,8 +1154,8 @@
     }
 
     function shareUrl() {
-      const base = location.href.split("#")[0];
-      return `${base}#k=${encodeSharePayload(sharedPayload())}`;
+      const base = location.href.split("#")[0].split("?")[0];
+      return `${base}?k=${encodeSharePayload(sharedPayload())}`;
     }
 
     function copyText(text) {
@@ -1636,7 +1649,7 @@
       toast("初期データに戻しました");
     });
 
-    const importedSharedData = applySharedDataFromHash();
+    const importedSharedData = applySharedDataFromUrl();
     migrateStoredData();
     render();
     if (importedSharedData === true) {

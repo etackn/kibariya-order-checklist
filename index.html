@@ -33,7 +33,7 @@
       letter-spacing: 0;
     }
 
-    button, input, select {
+    button, input, select, textarea {
       font: inherit;
     }
 
@@ -488,7 +488,7 @@
       margin-bottom: 6px;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       min-height: 44px;
       padding: 10px;
@@ -499,7 +499,13 @@
       outline: none;
     }
 
-    input:focus, select:focus {
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
       border-color: var(--brand);
       box-shadow: 0 0 0 3px rgba(181,54,50,.12);
     }
@@ -536,6 +542,20 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 12px;
+    }
+
+    .share-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .share-help {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
+      margin: 8px 0 0;
     }
 
     .menu-card {
@@ -725,7 +745,16 @@
           <h2>共有</h2>
         </div>
         <div class="panel form">
-          <button class="primary-btn" id="copyShareLinkBtn" type="button">共有リンクをコピー</button>
+          <div class="share-actions">
+            <button class="primary-btn" id="copyShareLinkBtn" type="button">共有リンクをコピー</button>
+            <button class="ghost-btn" id="copyShareDataBtn" type="button">共有データだけコピー</button>
+          </div>
+          <p class="share-help">リンクで反映されない時は、共有データだけコピーして相手に送り、下の欄へ貼り付けて取り込んでください。</p>
+          <div class="field" style="margin-top: 12px;">
+            <label for="shareImportText">共有データを貼り付け</label>
+            <textarea id="shareImportText" placeholder="共有データ、または共有リンクを貼り付け"></textarea>
+          </div>
+          <button class="ghost-btn" id="importShareDataBtn" type="button">貼り付けたデータを取り込む</button>
         </div>
 
         <div class="section-title">
@@ -1052,27 +1081,68 @@
       };
     }
 
+    function encodeSharePayload(payload) {
+      const json = JSON.stringify(payload);
+      const bytes = new TextEncoder().encode(json);
+      let binary = "";
+      bytes.forEach(byte => binary += String.fromCharCode(byte));
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function decodeSharePayload(encoded) {
+      const normalized = encoded.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+      const binary = atob(padded);
+      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    function sharedDataText() {
+      return `KIBARIYA1.${encodeSharePayload(sharedPayload())}`;
+    }
+
+    function payloadFromSharedText(text) {
+      const value = String(text || "").trim();
+      if (!value) return null;
+
+      const hashIndex = value.indexOf("#");
+      if (hashIndex >= 0) return payloadFromSharedText(value.slice(hashIndex));
+
+      if (value.startsWith("#k=")) return decodeSharePayload(value.slice(3));
+      if (value.startsWith("KIBARIYA1.")) return decodeSharePayload(value.slice("KIBARIYA1.".length));
+      if (value.startsWith("#kibariya=")) return JSON.parse(decodeURIComponent(value.slice("#kibariya=".length)));
+      if (value.startsWith("{")) return JSON.parse(value);
+      return decodeSharePayload(value);
+    }
+
+    function applySharedPayload(payload) {
+      if (!payload || !Array.isArray(payload.menus) || !Array.isArray(payload.rules)) {
+        throw new Error("invalid shared payload");
+      }
+      state.menus = payload.menus;
+      state.rules = payload.rules;
+      state.companies = Array.isArray(payload.companies) ? payload.companies : [];
+      state.selectedMenus = {};
+      save(STORAGE_KEYS.menus, state.menus);
+      save(STORAGE_KEYS.rules, state.rules);
+      save(STORAGE_KEYS.companies, state.companies);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+    }
+
     function applySharedDataFromHash() {
-      const prefix = "#kibariya=";
-      if (!location.hash.startsWith(prefix)) return false;
+      if (!location.hash) return false;
       try {
-        const payload = JSON.parse(decodeURIComponent(location.hash.slice(prefix.length)));
-        if (!Array.isArray(payload.menus) || !Array.isArray(payload.rules)) return false;
-        state.menus = payload.menus;
-        state.rules = payload.rules;
-        state.companies = Array.isArray(payload.companies) ? payload.companies : [];
-        save(STORAGE_KEYS.menus, state.menus);
-        save(STORAGE_KEYS.rules, state.rules);
-        save(STORAGE_KEYS.companies, state.companies);
+        applySharedPayload(payloadFromSharedText(location.hash));
+        history.replaceState(null, "", location.href.split("#")[0]);
         return true;
       } catch (error) {
-        return false;
+        return "error";
       }
     }
 
     function shareUrl() {
       const base = location.href.split("#")[0];
-      return `${base}#kibariya=${encodeURIComponent(JSON.stringify(sharedPayload()))}`;
+      return `${base}#k=${encodeSharePayload(sharedPayload())}`;
     }
 
     function copyText(text) {
@@ -1526,6 +1596,24 @@
         .then(() => toast("共有リンクをコピーしました"))
         .catch(() => toast("コピーできませんでした。URLを手動でコピーしてください"));
     });
+    document.getElementById("copyShareDataBtn").addEventListener("click", () => {
+      copyText(sharedDataText())
+        .then(() => toast("共有データをコピーしました"))
+        .catch(() => toast("コピーできませんでした。文字を手動でコピーしてください"));
+    });
+    document.getElementById("importShareDataBtn").addEventListener("click", () => {
+      const input = document.getElementById("shareImportText");
+      try {
+        applySharedPayload(payloadFromSharedText(input.value));
+        migrateStoredData();
+        input.value = "";
+        switchScreen("manage");
+        render();
+        toast("共有データを取り込みました");
+      } catch (error) {
+        toast("取り込めませんでした。共有データが途中で欠けていないか確認してください");
+      }
+    });
     document.getElementById("toOrder").addEventListener("click", () => switchScreen("order"));
     document.getElementById("toManage").addEventListener("click", () => switchScreen("manage"));
     document.getElementById("resetMasterBtn").addEventListener("click", () => {
@@ -1551,7 +1639,12 @@
     const importedSharedData = applySharedDataFromHash();
     migrateStoredData();
     render();
-    if (importedSharedData) toast("共有データを取り込みました");
+    if (importedSharedData === true) {
+      switchScreen("manage");
+      toast("共有データを取り込みました");
+    } else if (importedSharedData === "error") {
+      toast("共有リンクを読み込めませんでした。データが途中で欠けている可能性があります");
+    }
   </script>
 </body>
 </html>

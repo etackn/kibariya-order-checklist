@@ -710,8 +710,8 @@
     <main>
       <section class="screen active" id="orderScreen">
         <div class="day-tabs" id="dayTabs" aria-label="曜日選択"></div>
-        <div id="menuSelection"></div>
         <div id="orderAlerts"></div>
+        <div id="menuSelection"></div>
         <div class="panel order-actions">
           <div class="status-msg" id="statusMsg"></div>
           <button class="reset-btn" id="resetChecksBtn" type="button">一括解除</button>
@@ -742,26 +742,25 @@
         </div>
 
         <div class="section-title">
-          <h2>共有</h2>
-        </div>
-        <div class="panel form">
-          <div class="share-actions">
-            <button class="primary-btn" id="copyShareLinkBtn" type="button">共有リンクをコピー</button>
-            <button class="ghost-btn" id="copyShareDataBtn" type="button">共有データだけコピー</button>
-          </div>
-          <p class="share-help">リンクで反映されない時は、共有データだけコピーして相手に送り、下の欄へ貼り付けて取り込んでください。</p>
-          <div class="field" style="margin-top: 12px;">
-            <label for="shareImportText">共有データを貼り付け</label>
-            <textarea id="shareImportText" placeholder="共有データ、または共有リンクを貼り付け"></textarea>
-          </div>
-          <button class="ghost-btn" id="importShareDataBtn" type="button">貼り付けたデータを取り込む</button>
-        </div>
-
-        <div class="section-title">
           <h2>メニュー一覧</h2>
           <button class="tiny-btn" id="resetMasterBtn" type="button">初期化</button>
         </div>
         <div id="menuList"></div>
+
+        <div class="section-title">
+          <h2>共有</h2>
+        </div>
+        <div class="panel form">
+          <div class="share-actions">
+            <button class="primary-btn" id="copyShareDataBtn" type="button">共有データをコピー</button>
+          </div>
+          <p class="share-help">メニューや発注会社を共有したい時は、このデータをLINEなどで送ってください。受け取った側は下の欄へ貼り付けて取り込みます。</p>
+          <div class="field" style="margin-top: 12px;">
+            <label for="shareImportText">共有データを貼り付け</label>
+            <textarea id="shareImportText" placeholder="KIBARIYA1. から始まる共有データを貼り付け"></textarea>
+          </div>
+          <button class="ghost-btn" id="importShareDataBtn" type="button">貼り付けたデータを取り込む</button>
+        </div>
 
         <div class="section-title">
           <h2>発注会社管理</h2>
@@ -844,14 +843,14 @@
       menu("長芋だし醤油", [["長芋","1"]]),
       menu("その他単品", [["ポテト","2"]]),
       menu("ハムカツ", [["うんぜんはむ","2"]]),
-      menu("春巻き", [["えび","1kg"],["しいたけ","5"],["やくみみそ","1"]]),
+      menu("春巻き", [["えび","1kg"],["しいたけ","6個入りを5"],["やくみみそ","1"]]),
       menu("ネギカット", [["細ネギ","4"]])
     ];
 
     const DAYS = [
       { label: "日", full: "日曜日", vendors: ["rikaman","muraoka","nabata","nishihara","egg"], twoDay: ["rikaman"] },
-      { label: "月", full: "月曜日", vendors: ["muraoka","nabata","nishihara","egg"], twoDay: ["nabata"] },
-      { label: "火", full: "火曜日", vendors: ["nabata","nishihara","rikaman","ogawa"], twoDay: ["nabata"] },
+      { label: "月", full: "月曜日", vendors: ["muraoka","nabata","nishihara","egg"], twoDay: ["muraoka"] },
+      { label: "火", full: "火曜日", vendors: ["nabata","nishihara","rikaman","ogawa"], twoDay: [] },
       { label: "水", full: "水曜日", vendors: ["muraoka","nabata","rikaman","nishihara","egg"], twoDay: [] },
       { label: "木", full: "木曜日", vendors: ["muraoka","nabata","nishihara","rikaman","egg"], twoDay: [] },
       { label: "金", full: "金曜日", vendors: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"], twoDay: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"] },
@@ -861,7 +860,7 @@
     const state = {
       activeScreen: "order",
       selectedDate: localDateIso(new Date()),
-      selectedDay: new Date().getDay(),
+      selectedDay: null,
       menus: readJson(STORAGE_KEYS.menus, DEFAULT_MENUS),
       rules: readJson(STORAGE_KEYS.rules, DEFAULT_RULES),
       checks: readJson(STORAGE_KEYS.checks, {}),
@@ -1178,6 +1177,12 @@
       const shiitake = state.rules.find(rule => normalize(rule.material) === normalize("しいたけ"));
       if (shiitake) shiitake.assignee = "muraoka";
       else state.rules.unshift({ id: uid(), material: "しいたけ", assignee: "muraoka" });
+      const springRoll = state.menus.find(menuItem => normalize(menuItem.name) === normalize("春巻き"));
+      const springRollShiitake = springRoll?.ingredients.find(item => normalize(item.name) === normalize("しいたけ"));
+      if (springRollShiitake) {
+        springRollShiitake.qty = "6個入りを5";
+        save(STORAGE_KEYS.menus, state.menus);
+      }
       save(STORAGE_KEYS.rules, state.rules);
     }
 
@@ -1269,17 +1274,31 @@
     }
 
     function renderOrder() {
+      const alerts = document.getElementById("orderAlerts");
+      const list = document.getElementById("taskList");
+      const menuSelection = document.getElementById("menuSelection");
+      const orderActions = document.querySelector(".order-actions");
+      alerts.innerHTML = "";
+
+      if (state.selectedDay === null) {
+        menuSelection.innerHTML = "";
+        list.innerHTML = "";
+        document.getElementById("statusMsg").textContent = "";
+        if (orderActions) orderActions.style.display = "none";
+        alerts.innerHTML = `<div class="notice">まず曜日を選択してください。曜日を選ぶと、本日の2日分発注と必要な発注リストを確認できます</div>`;
+        return;
+      }
+
+      if (orderActions) orderActions.style.display = "flex";
       const day = DAYS[state.selectedDay];
       const selected = selectedMenuIds();
       renderMenuSelection();
-      const alerts = document.getElementById("orderAlerts");
       const twoDayLabels = day.twoDay.map(id => assigneeById(id).label.replace("（びっぐえっぐ）", ""));
-      alerts.innerHTML = "";
+      if (twoDayLabels.length) {
+        alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>本日は、【${escapeHtml(twoDayLabels.join("・"))}】が2日分発注です！</span></div>`;
+      }
       if (!selected.length) {
         alerts.innerHTML += `<div class="notice">まず仕込み・料理名を選択してください。選んだメニューの材料だけを発注リストに表示します</div>`;
-      }
-      if (twoDayLabels.length) {
-        alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>本日は【${escapeHtml(twoDayLabels.join("・"))}】が2日分発注です！</span></div>`;
       }
       if (day.vendors.length === 0) {
         alerts.innerHTML += `<div class="notice">本日の業者発注はありません。買い出し・店長連絡のみ確認してください</div>`;
@@ -1291,7 +1310,6 @@
       const total = allItems.length;
       document.getElementById("statusMsg").textContent = total ? `${done} / ${total} 確認済み` : "";
 
-      const list = document.getElementById("taskList");
       if (groups.length === 0) {
         list.innerHTML = `<div class="panel empty">${selected.length ? "選択したメニューで本日発注する項目はありません" : "上の一覧から仕込み・料理を選択してください"}</div>`;
         return;
@@ -1429,12 +1447,18 @@
         ingredients: ingredients.map(item => ({ id: item.id, name: item.name, qty: item.qty }))
       };
       const index = state.menus.findIndex(item => item.id === id);
+      const isNewMenu = index < 0;
       if (index >= 0) state.menus.splice(index, 1, next);
       else state.menus.unshift(next);
       save(STORAGE_KEYS.menus, state.menus);
       clearMenuForm();
       render();
       toast("メニューを保存しました");
+      if (isNewMenu && confirm("新しいメニューを保存しました。共有データをコピーしますか？")) {
+        copyText(sharedDataText())
+          .then(() => toast("共有データをコピーしました"))
+          .catch(() => toast("コピーできませんでした。共有欄からコピーしてください"));
+      }
     }
 
     function editMenu(id) {
@@ -1604,11 +1628,6 @@
     document.getElementById("saveCompanyBtn").addEventListener("click", saveCompanyFromForm);
     document.getElementById("clearCompanyBtn").addEventListener("click", clearCompanyForm);
     document.getElementById("newCompanyBtn").addEventListener("click", clearCompanyForm);
-    document.getElementById("copyShareLinkBtn").addEventListener("click", () => {
-      copyText(shareUrl())
-        .then(() => toast("共有リンクをコピーしました"))
-        .catch(() => toast("コピーできませんでした。URLを手動でコピーしてください"));
-    });
     document.getElementById("copyShareDataBtn").addEventListener("click", () => {
       copyText(sharedDataText())
         .then(() => toast("共有データをコピーしました"))

@@ -60,6 +60,12 @@
       color: #fff;
       padding: 16px 16px 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,.16);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .topbar:active {
+      background: #22252b;
     }
 
     .topbar-row {
@@ -136,50 +142,44 @@
     }
 
     .selector-panel {
-      padding: 12px;
+      padding: 9px;
     }
 
     .selector-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 8px;
+      margin-bottom: 8px;
     }
 
     .selector-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
-      line-height: 1.35;
+      line-height: 1.25;
     }
 
     .selector-sub {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
-      line-height: 1.45;
-      margin-top: 3px;
-    }
-
-    .selector-actions {
-      display: flex;
-      gap: 6px;
-      flex: 0 0 auto;
+      line-height: 1.35;
+      margin-top: 2px;
     }
 
     .menu-options {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 8px;
+      gap: 6px;
     }
 
     .menu-option {
       display: grid;
-      grid-template-columns: 28px minmax(0, 1fr);
-      gap: 8px;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      gap: 7px;
       align-items: center;
-      min-height: 46px;
-      padding: 9px 10px;
+      min-height: 34px;
+      padding: 6px 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
@@ -192,28 +192,89 @@
     }
 
     .menu-option input {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       min-height: auto;
       padding: 0;
       accent-color: var(--green);
     }
 
+    .menu-option-text {
+      min-width: 0;
+    }
+
     .menu-option-name {
-      font-size: 14px;
+      display: block;
+      font-size: 13px;
       font-weight: 900;
-      line-height: 1.35;
+      line-height: 1.2;
       overflow-wrap: anywhere;
+    }
+
+    .serving-note {
+      display: inline-block;
+      margin-left: 4px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .menu-option-detail {
       display: block;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
-      line-height: 1.35;
-      margin-top: 2px;
+      line-height: 1.25;
+      margin-top: 1px;
       overflow-wrap: anywhere;
+    }
+
+    .menu-stepper {
+      display: inline-grid;
+      grid-template-columns: 30px 28px 30px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .stepper-btn {
+      width: 30px;
+      height: 30px;
+      background: #f3f6f9;
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stepper-count {
+      min-width: 28px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .menu-stepper.disabled {
+      opacity: .42;
+    }
+
+    .order-settings {
+      padding: 12px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
     }
 
     .progress-head {
@@ -243,6 +304,18 @@
       gap: 10px;
       padding: 12px;
       margin-bottom: 12px;
+    }
+
+    .complete-actions {
+      display: flex;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .complete-actions .primary-btn {
+      width: 100%;
+      min-height: 48px;
+      font-size: 15px;
     }
 
     .status-msg {
@@ -619,6 +692,61 @@
       font-weight: 800;
     }
 
+    .agent-panel {
+      padding: 12px;
+    }
+
+    .agent-lead {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .agent-question {
+      min-height: 46px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .agent-question:active {
+      background: #f3f6f9;
+    }
+
+    .agent-answer {
+      padding: 14px;
+      border-left: 5px solid var(--green);
+    }
+
+    .agent-answer-title {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    .agent-answer-body {
+      color: #30343b;
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.7;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
     .bottom-nav {
       position: fixed;
       left: 50%;
@@ -632,7 +760,7 @@
       border-top: 1px solid var(--line);
       backdrop-filter: blur(14px);
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
     }
 
@@ -698,7 +826,7 @@
 </head>
 <body>
   <div class="app">
-    <header class="topbar">
+    <header class="topbar" id="appHomeHeader" role="button" tabindex="0" aria-label="最初の画面に戻る">
       <div class="topbar-row">
         <div class="brand-block">
           <div class="eyebrow">居酒屋 きばり屋</div>
@@ -717,6 +845,9 @@
           <button class="reset-btn" id="resetChecksBtn" type="button">一括解除</button>
         </div>
         <div id="taskList"></div>
+        <div class="panel complete-actions">
+          <button class="primary-btn" id="completeOrderBtn" type="button">発注完了</button>
+        </div>
       </section>
 
       <section class="screen" id="manageScreen">
@@ -781,12 +912,37 @@
           <div class="rule-list" id="companyList"></div>
         </div>
       </section>
+
+      <section class="screen" id="agentScreen">
+        <div class="section-title">
+          <h2>発注相談</h2>
+        </div>
+        <div class="panel agent-panel">
+          <p class="agent-lead">発注業務について質問してください。このアプリ内の曜日・メニュー・発注会社ルールをもとに回答します。</p>
+          <div class="field">
+            <label for="agentPromptInput">質問内容</label>
+            <textarea id="agentPromptInput" placeholder="例：明日すき焼きコース8名なら？&#10;例：今白ネギが5足しかないけど発注必要？&#10;例：卵が0個なら何kg？"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" id="resetAgentBtn" type="button">リセット</button>
+            <button class="primary-btn" id="askAgentBtn" type="button">質問する</button>
+          </div>
+        </div>
+        <div class="panel agent-answer" id="agentAnswer">
+          <div class="agent-answer-title">質問を入力してください</div>
+          <div class="agent-answer-body">コース予約人数、在庫数からの発注判断、曜日別の発注、2日分発注、材料の発注先などを確認できます。</div>
+        </div>
+      </section>
     </main>
 
     <nav class="bottom-nav" aria-label="画面切り替え">
       <button class="nav-btn active" id="toOrder" type="button">
         <span class="nav-icon">✓</span>
         <span class="nav-text">発注</span>
+      </button>
+      <button class="nav-btn" id="toAgent" type="button">
+        <span class="nav-icon">?</span>
+        <span class="nav-text">相談</span>
       </button>
       <button class="nav-btn" id="toManage" type="button">
         <span class="nav-icon">≡</span>
@@ -803,6 +959,8 @@
       checks: "kibariya.checks.v1",
       openGroups: "kibariya.openGroups.v1",
       selectedMenus: "kibariya.selectedMenus.v1",
+      menuMultipliers: "kibariya.menuMultipliers.v1",
+      orderSettings: "kibariya.orderSettings.v1",
       companies: "kibariya.companies.v1"
     };
 
@@ -823,7 +981,7 @@
 
     const DEFAULT_RULES = [
       ...["キャベツ","えのき","春菊","白菜","白ネギ","舞茸","サニーレタス","水菜","赤パプ","黄パプ","緑かいわれ","桜かいわれ","茗荷","細ネギ","長ネギ","きゅうり","長芋"].map(material => ({ id: uid(), material, assignee: "muraoka" })),
-      ...["豆腐","クリームチーズ","豆乳","やくみみそ"].map(material => ({ id: uid(), material, assignee: "nabata" })),
+      ...["豆腐","クリームチーズ","豆乳","やくみみそ","上新粉","小麦粉"].map(material => ({ id: uid(), material, assignee: "nabata" })),
       ...["うんぜんはむ","えび","ポテト"].map(material => ({ id: uid(), material, assignee: "nishihara" })),
       ...["コーラ","ジンジャエール","レモンサワー","ビールの生樽"].map(material => ({ id: uid(), material, assignee: "rikaman" })),
       ...["日本酒","果実酒","地酒"].map(material => ({ id: uid(), material, assignee: "ogawa" })),
@@ -844,7 +1002,8 @@
       menu("その他単品", [["ポテト","2"]]),
       menu("ハムカツ", [["うんぜんはむ","2"]]),
       menu("春巻き", [["えび","1kg"],["しいたけ","6個入りを5"],["やくみみそ","1"]]),
-      menu("ネギカット", [["細ネギ","4"]])
+      menu("ネギカット", [["細ネギ","4"]]),
+      menu("手羽唐", [["上新粉","在庫確認"],["小麦粉","在庫確認"]])
     ];
 
     const DAYS = [
@@ -866,6 +1025,8 @@
       checks: readJson(STORAGE_KEYS.checks, {}),
       openGroups: readJson(STORAGE_KEYS.openGroups, {}),
       selectedMenus: readJson(STORAGE_KEYS.selectedMenus, {}),
+      menuMultipliers: readJson(STORAGE_KEYS.menuMultipliers, {}),
+      orderSettings: readJson(STORAGE_KEYS.orderSettings, {}),
       companies: readJson(STORAGE_KEYS.companies, [])
     };
 
@@ -1006,10 +1167,67 @@
       save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
     }
 
+    function orderSettings(date = state.selectedDate) {
+      const current = state.orderSettings[date] || {};
+      return {
+        waterCourseGuests: Number(current.waterCourseGuests || 0),
+        leafWholeStock: current.leafWholeStock ?? "",
+        eggStock: current.eggStock || ""
+      };
+    }
+
+    function saveOrderSettings(date, next) {
+      state.orderSettings[date] = { ...orderSettings(date), ...next };
+      save(STORAGE_KEYS.orderSettings, state.orderSettings);
+    }
+
+    function menuByName(name) {
+      return state.menus.find(menuItem => normalize(menuItem.name).includes(normalize(name)));
+    }
+
+    function multiplierMap(date = state.selectedDate) {
+      if (!state.menuMultipliers[date]) state.menuMultipliers[date] = {};
+      return state.menuMultipliers[date];
+    }
+
+    function menuMultiplier(menuId, date = state.selectedDate) {
+      return Math.max(1, Number(multiplierMap(date)[menuId] || 1));
+    }
+
+    function saveMenuMultiplier(menuId, value, date = state.selectedDate) {
+      multiplierMap(date)[menuId] = Math.max(1, Number(value || 1));
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+    }
+
+    function effectiveSelectedMenuIds(date = state.selectedDate) {
+      return selectedMenuIds(date);
+    }
+
+    function effectiveMenuMultiplier(menuItem) {
+      return menuMultiplier(menuItem.id);
+    }
+
+    function formatScaledNumber(value) {
+      return Number.isInteger(value) ? String(value) : String(Math.round(value * 100) / 100);
+    }
+
+    function scaleQuantity(qty, multiplier) {
+      if (!qty || multiplier === 1) return qty;
+      const text = String(qty);
+      const fraction = text.match(/^(\d+)\/(\d+)(.*)$/);
+      if (fraction) {
+        const value = (Number(fraction[1]) / Number(fraction[2])) * multiplier;
+        return `${formatScaledNumber(value)}${fraction[3]}`;
+      }
+      const onePack = text.match(/^(.+?を)(\d+(?:\.\d+)?)(.*)$/);
+      if (onePack) return `${onePack[1]}${formatScaledNumber(Number(onePack[2]) * multiplier)}${onePack[3]}`;
+      return text.replace(/(\d+(?:\.\d+)?)/g, (match, number) => formatScaledNumber(Number(number) * multiplier));
+    }
+
     function visibleGroups() {
       const day = DAYS[state.selectedDay];
       const groups = new Map();
-      const selected = new Set(selectedMenuIds());
+      const selected = new Set(effectiveSelectedMenuIds());
 
       function ensureGroup(assignee) {
         if (!groups.has(assignee)) groups.set(assignee, []);
@@ -1018,14 +1236,16 @@
 
       state.menus.forEach(menuItem => {
         if (!selected.has(menuItem.id)) return;
+        const multiplier = effectiveMenuMultiplier(menuItem);
+        const cheeseTofuBuy = normalize(menuItem.name).includes(normalize("チーズ豆腐"));
         menuItem.ingredients.forEach(ingredient => {
-          const assignee = ruleForIngredient(ingredient.name);
+          const assignee = cheeseTofuBuy ? "buy" : ruleForIngredient(ingredient.name);
           const isVendor = BASE_VENDOR_IDS.includes(assignee);
           if (isVendor && !day.vendors.includes(assignee)) return;
           ensureGroup(assignee).push({
             name: ingredient.name.trim(),
-            qty: ingredient.qty.trim(),
-            source: menuItem.name
+            qty: scaleQuantity(ingredient.qty.trim(), multiplier),
+            source: multiplier > 1 ? `${menuItem.name} x${multiplier}` : menuItem.name
           });
         });
       });
@@ -1134,10 +1354,14 @@
       state.rules = payload.rules;
       state.companies = Array.isArray(payload.companies) ? payload.companies : [];
       state.selectedMenus = {};
+      state.menuMultipliers = {};
+      state.orderSettings = {};
       save(STORAGE_KEYS.menus, state.menus);
       save(STORAGE_KEYS.rules, state.rules);
       save(STORAGE_KEYS.companies, state.companies);
       save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      save(STORAGE_KEYS.orderSettings, state.orderSettings);
     }
 
     function applySharedDataFromUrl() {
@@ -1177,10 +1401,16 @@
       const shiitake = state.rules.find(rule => normalize(rule.material) === normalize("しいたけ"));
       if (shiitake) shiitake.assignee = "muraoka";
       else state.rules.unshift({ id: uid(), material: "しいたけ", assignee: "muraoka" });
+      upsertMaterialRule("上新粉", "nabata");
+      upsertMaterialRule("小麦粉", "nabata");
       const springRoll = state.menus.find(menuItem => normalize(menuItem.name) === normalize("春巻き"));
       const springRollShiitake = springRoll?.ingredients.find(item => normalize(item.name) === normalize("しいたけ"));
       if (springRollShiitake) {
         springRollShiitake.qty = "6個入りを5";
+        save(STORAGE_KEYS.menus, state.menus);
+      }
+      if (!menuByName("手羽唐")) {
+        state.menus.push(menu("手羽唐", [["上新粉","在庫確認"],["小麦粉","在庫確認"]]));
         save(STORAGE_KEYS.menus, state.menus);
       }
       save(STORAGE_KEYS.rules, state.rules);
@@ -1190,6 +1420,7 @@
       renderTabs();
       renderOrder();
       renderManage();
+      renderAgent();
       renderNav();
     }
 
@@ -1210,6 +1441,7 @@
     function renderMenuSelection() {
       const box = document.getElementById("menuSelection");
       const selected = selectedMenuIds();
+      const effectiveSelected = effectiveSelectedMenuIds();
       if (state.selectedMenus[state.selectedDate]?.length !== selected.length) {
         saveSelectedMenuIds(state.selectedDate, selected);
       }
@@ -1231,22 +1463,27 @@
               <div class="selector-title">仕込み・料理を選択</div>
               <div class="selector-sub">選んだ料理に必要な材料だけを発注リストに表示します。選択中 ${selected.length} / ${state.menus.length}</div>
             </div>
-            <div class="selector-actions">
-              <button class="tiny-btn" id="selectAllMenusBtn" type="button">全選択</button>
-              <button class="tiny-btn" id="clearMenusBtn" type="button">解除</button>
-            </div>
           </div>
           <div class="menu-options">
             ${state.menus.map(menuItem => {
               const checked = selected.includes(menuItem.id);
-              const ingredientNames = menuItem.ingredients.map(item => item.name).filter(Boolean).slice(0, 4).join("、");
-              const more = menuItem.ingredients.length > 4 ? ` ほか${menuItem.ingredients.length - 4}件` : "";
+              const multiplier = menuMultiplier(menuItem.id);
+              const autoSelected = !checked && effectiveSelected.includes(menuItem.id);
+              const servesFourBase = ["水炊き", "すき焼き"].some(name => normalize(menuItem.name).includes(normalize(name)));
+              const servingNote = servesFourBase
+                ? `<span class="serving-note">現在${multiplier * 4}人分</span>`
+                : "";
               return `
-                <label class="menu-option ${checked ? "selected" : ""}">
-                  <input type="checkbox" class="menu-select" data-menu="${menuItem.id}" ${checked ? "checked" : ""} />
-                  <span>
-                    <span class="menu-option-name">${escapeHtml(menuItem.name)}</span>
-                    <span class="menu-option-detail">${escapeHtml(ingredientNames + more)}</span>
+                <label class="menu-option ${checked || autoSelected ? "selected" : ""}">
+                  <input type="checkbox" class="menu-select" data-menu="${menuItem.id}" ${checked || autoSelected ? "checked" : ""} ${autoSelected ? "disabled" : ""} />
+                  <span class="menu-option-text">
+                    <span class="menu-option-name">${escapeHtml(menuItem.name)}${servingNote}</span>
+                    ${autoSelected ? `<span class="menu-option-detail">自動追加</span>` : ""}
+                  </span>
+                  <span class="menu-stepper ${checked || autoSelected ? "" : "disabled"}" aria-label="仕込み数量">
+                    <button class="stepper-btn" type="button" data-step-menu="${menuItem.id}" data-step="-1">-</button>
+                    <span class="stepper-count">${multiplier}</span>
+                    <button class="stepper-btn" type="button" data-step-menu="${menuItem.id}" data-step="1">+</button>
                   </span>
                 </label>
               `;
@@ -1261,15 +1498,18 @@
           renderOrder();
         });
       });
-      document.getElementById("selectAllMenusBtn").addEventListener("click", () => {
-        saveSelectedMenuIds(state.selectedDate, state.menus.map(item => item.id));
-        renderOrder();
-        toast("全メニューを選択しました");
-      });
-      document.getElementById("clearMenusBtn").addEventListener("click", () => {
-        saveSelectedMenuIds(state.selectedDate, []);
-        renderOrder();
-        toast("選択を解除しました");
+      box.querySelectorAll("[data-step-menu]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const menuId = button.dataset.stepMenu;
+          const step = Number(button.dataset.step);
+          const current = menuMultiplier(menuId);
+          const selectedIds = selectedMenuIds();
+          if (!selectedIds.includes(menuId)) saveSelectedMenuIds(state.selectedDate, [...selectedIds, menuId]);
+          saveMenuMultiplier(menuId, Math.max(1, current + step));
+          renderOrder();
+        });
       });
     }
 
@@ -1278,6 +1518,7 @@
       const list = document.getElementById("taskList");
       const menuSelection = document.getElementById("menuSelection");
       const orderActions = document.querySelector(".order-actions");
+      const completeActions = document.querySelector(".complete-actions");
       alerts.innerHTML = "";
 
       if (state.selectedDay === null) {
@@ -1285,17 +1526,28 @@
         list.innerHTML = "";
         document.getElementById("statusMsg").textContent = "";
         if (orderActions) orderActions.style.display = "none";
+        if (completeActions) completeActions.style.display = "none";
         alerts.innerHTML = `<div class="notice">まず曜日を選択してください。曜日を選ぶと、本日の2日分発注と必要な発注リストを確認できます</div>`;
         return;
       }
 
       if (orderActions) orderActions.style.display = "flex";
+      if (completeActions) completeActions.style.display = "flex";
       const day = DAYS[state.selectedDay];
-      const selected = selectedMenuIds();
+      const selected = effectiveSelectedMenuIds();
+      const selectedMenusSet = new Set(selected);
       renderMenuSelection();
       const twoDayLabels = day.twoDay.map(id => assigneeById(id).label.replace("（びっぐえっぐ）", ""));
       if (twoDayLabels.length) {
         alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>本日は、【${escapeHtml(twoDayLabels.join("・"))}】が2日分発注です！</span></div>`;
+      }
+      const tebaMenu = menuByName("手羽唐");
+      if (tebaMenu && selectedMenusSet.has(tebaMenu.id)) {
+        alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>手羽唐: 上新粉と小麦粉の在庫確認をしてください</span></div>`;
+      }
+      const cheeseMenu = menuByName("チーズ豆腐");
+      if (cheeseMenu && selectedMenusSet.has(cheeseMenu.id)) {
+        alerts.innerHTML += `<div class="notice">チーズ豆腐の原材料は、当日の買い出しリストへ自動追加しています</div>`;
       }
       if (!selected.length) {
         alerts.innerHTML += `<div class="notice">まず仕込み・料理名を選択してください。選んだメニューの材料だけを発注リストに表示します</div>`;
@@ -1322,7 +1574,7 @@
         const twoBadge = day.twoDay.includes(group.assignee) ? `<span class="badge two">2日分</span>` : "";
         const subText = isBuyGroup ? `${totalCount}件` : `${checkedCount} / ${totalCount} 完了`;
         const body = group.items.length ? `
-          ${group.assignee === "egg" ? `<div class="script">お疲れ様です。きばり屋です。卵の発注をお願いします。数量は本日の必要数に合わせて確認してください。</div>` : ""}
+          ${group.assignee === "egg" ? `<div class="script">電話帳 ➔ びっくえっぐ ➔ 外線。お疲れ様です。きばり屋です。卵の発注をお願いします。数量は本日の必要数に合わせて確認してください。</div>` : ""}
           ${group.items.map(item => itemRow(item, group.assignee)).join("")}
         ` : `<div class="empty">登録材料なし</div>`;
         return `
@@ -1600,16 +1852,314 @@
       box.querySelectorAll("[data-delete-company]").forEach(btn => btn.addEventListener("click", () => deleteCompany(btn.dataset.deleteCompany)));
     }
 
+    function renderAgent() {
+      const input = document.getElementById("agentPromptInput");
+      const button = document.getElementById("askAgentBtn");
+      const resetButton = document.getElementById("resetAgentBtn");
+      if (!input || !button) return;
+      button.onclick = () => answerTypedQuestion(input.value);
+      if (resetButton) resetButton.onclick = resetAgentQuestion;
+    }
+
+    function setAgentAnswer(title, body) {
+      document.querySelector("#agentAnswer .agent-answer-title").textContent = title;
+      document.querySelector("#agentAnswer .agent-answer-body").textContent = body;
+    }
+
+    function resetAgentQuestion() {
+      const input = document.getElementById("agentPromptInput");
+      if (input) input.value = "";
+      setAgentAnswer("質問を入力してください", "コース予約人数、在庫数からの発注判断、曜日別の発注、2日分発注、材料の発注先などを確認できます。");
+      toast("相談内容をリセットしました");
+    }
+
+    function selectedDayOrMessage() {
+      if (state.selectedDay === null) return null;
+      return DAYS[state.selectedDay];
+    }
+
+    function formatGroupLines(groups) {
+      return groups.map(group => {
+        const items = group.items.map(item => `${item.name}（${itemSummary(item)}）`).join("、");
+        return `・${group.meta.label}: ${items || "該当なし"}`;
+      }).join("\n");
+    }
+
+    function dayFromText(text) {
+      const t = normalize(text);
+      if (t.includes("今日") || t.includes("本日")) return new Date().getDay();
+      return DAYS.findIndex(day => t.includes(normalize(`${day.label}曜`)) || t.includes(normalize(day.full)));
+    }
+
+    function materialFromText(text) {
+      const t = normalize(text);
+      return [...state.rules]
+        .map(rule => rule.material)
+        .filter(Boolean)
+        .sort((a, b) => normalize(b).length - normalize(a).length)
+        .find(material => t.includes(normalize(material)));
+    }
+
+    function courseNameFromText(text) {
+      const t = normalize(text);
+      if (t.includes(normalize("水炊き"))) return "水炊き";
+      if (t.includes(normalize("すき焼き"))) return "すき焼き";
+      return "";
+    }
+
+    function quantityFromText(text) {
+      const normalizedText = String(text || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedText.match(/(\d+(?:\.\d+)?)\s*([^\d\s。、，,.！？?]*)(?:しか|だけ|ある|残|在庫|$)/);
+      if (!match) return null;
+      return {
+        value: Number(match[1]),
+        unit: match[2] || "",
+        label: `${match[1]}${match[2] || ""}`
+      };
+    }
+
+    function parseMenuQuantity(qty) {
+      const normalizedQty = String(qty || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedQty.match(/(\d+(?:\.\d+)?)\s*([^\d\s、，,.]*)/);
+      if (!match) return null;
+      return {
+        value: Number(match[1]),
+        unit: match[2] || "",
+        raw: qty
+      };
+    }
+
+    function materialUsage(material, selectedOnly = true) {
+      const ids = new Set(selectedOnly ? effectiveSelectedMenuIds() : state.menus.map(menuItem => menuItem.id));
+      return state.menus
+        .filter(menuItem => ids.has(menuItem.id))
+        .flatMap(menuItem => menuItem.ingredients
+          .filter(ingredient => normalize(ingredient.name) === normalize(material))
+          .map(ingredient => ({ menu: menuItem.name, qty: ingredient.qty || "数量未設定" })));
+    }
+
+    function isAssigneeScheduled(assignee, day) {
+      if (!day) return false;
+      if (assignee === "buy" || assignee === "manager") return true;
+      if (BASE_VENDOR_IDS.includes(assignee)) return day.vendors.includes(assignee);
+      return true;
+    }
+
+    function answerCourseQuestion(text, courseName) {
+      const guests = quantityFromText(text)?.value || 0;
+      if (!guests) {
+        setAgentAnswer(`${courseName}コースの発注計算`, `予約人数を入れて聞いてください。\n例: 明日${courseName}コース8名なら何を発注？`);
+        return;
+      }
+      const menuItem = menuByName(courseName);
+      if (!menuItem) {
+        setAgentAnswer(`${courseName}コースの発注計算`, `${courseName}のメニュー登録が見つかりません。メニュー管理を確認してください。`);
+        return;
+      }
+      const multiplier = Math.max(1, Math.ceil(guests / 4));
+      const lines = menuItem.ingredients.map(ingredient => {
+        const qty = ingredient.qty ? scaleQuantity(ingredient.qty, multiplier) : `数量未設定 x${multiplier}`;
+        const assignee = assigneeById(ruleForIngredient(ingredient.name)).label;
+        return `・${ingredient.name}: ${qty} / ${assignee}`;
+      }).join("\n");
+      setAgentAnswer(`${courseName}コース ${guests}名の目安`, `4人前基準で ${multiplier} 回分として計算します。\n\n${lines}\n\n発注画面では、必要に応じて${courseName}の数量を ${multiplier} に変更してください。`);
+    }
+
+    function answerLeafInventoryQuestion(text) {
+      const t = normalize(text);
+      const hasWholeStock = t.includes("ある") || t.includes("あり") || t.includes("1個") || t.includes("一個");
+      const multiplier = hasWholeStock ? 1 : 2;
+      setAgentAnswer("リーフの倍率判断", hasWholeStock
+        ? "メイン冷蔵庫以外に未使用がまるまる1個あるなら、リーフは1倍でよさそうです。\n発注画面でリーフの数量を1にしてください。"
+        : "未使用在庫がない、または在庫が少ない・未確認なら、安全策でリーフは2倍がよさそうです。\n発注画面でリーフの数量を2にしてください。");
+    }
+
+    function answerEggInventoryQuestion(text) {
+      const t = normalize(text);
+      const isZero = t.includes("0個") || t.includes("ゼロ") || t.includes("ない") || t.includes("無し");
+      const amount = isZero ? "7kg" : "5kg";
+      setAgentAnswer("卵の発注量", `卵の在庫が${isZero ? "0個" : "少し余裕あり"}なら、${amount} を発注目安にしてください。\n\n電話手順: 電話帳 ➔ びっくえっぐ ➔ 外線`);
+    }
+
+    function answerStockQuestion(text, material) {
+      const stock = quantityFromText(text);
+      const originalDay = state.selectedDay;
+      const mentionedDay = dayFromText(text);
+      const effectiveDayIndex = mentionedDay >= 0 ? mentionedDay : (state.selectedDay === null ? new Date().getDay() : state.selectedDay);
+      const day = DAYS[effectiveDayIndex];
+      const assigneeId = ruleForIngredient(material);
+      const assignee = assigneeById(assigneeId);
+      const selectedUsages = materialUsage(material, true);
+      const usages = selectedUsages.length ? selectedUsages : materialUsage(material, false);
+      const usageLines = usages.length
+        ? usages.map(item => `・${item.menu}: ${material} ${item.qty}`).join("\n")
+        : "登録メニュー内で使用先が見つかりません。";
+      const sourceLabel = selectedUsages.length ? "選択中メニュー" : "登録メニュー全体";
+      const scheduled = isAssigneeScheduled(assigneeId, day);
+      const twoDay = day.twoDay.includes(assigneeId);
+
+      let decision = "結論: 発注候補として確認してください。";
+      let compareLine = "登録数量と在庫数の単位が合わないため、数値だけでの断定はできません。";
+
+      if (stock) {
+        const comparable = usages
+          .map(item => parseMenuQuantity(item.qty))
+          .filter(item => item && item.unit === stock.unit);
+        if (comparable.length) {
+          const required = comparable.reduce((sum, item) => sum + item.value, 0);
+          compareLine = `${sourceLabel}の登録数量合計は ${required}${stock.unit}、現在庫は ${stock.label} です。`;
+          decision = stock.value < required ? "結論: 発注した方がよさそうです。" : "結論: 登録数量だけで見れば、急ぎの発注は不要そうです。";
+        } else if (material === "白ネギ" && stock.unit === "足") {
+          compareLine = `現在庫は ${stock.label} です。白ネギは「1足で7本」目安なので、約${stock.value * 7}本分として見られます。`;
+          decision = selectedUsages.length ? "結論: 選択中メニューで使うため、ねぎま本数やすき焼き分を見て不足しそうなら村岡へ発注してください。" : "結論: 今日使うメニューを選択してから判断してください。選択中メニューに白ネギが入るなら発注候補です。";
+        } else {
+          compareLine = `現在庫は ${stock.label} と読み取りました。`;
+          decision = selectedUsages.length ? "結論: 選択中メニューで使う材料なので、少なければ発注候補です。" : "結論: 選択中メニューでは確認できません。今日使うメニューを選ぶと判断しやすくなります。";
+        }
+      }
+
+      const scheduleLine = scheduled
+        ? `${day.full}は【${assignee.label}】の確認対象です。${twoDay ? "しかも2日分発注です。" : ""}`
+        : `${day.full}は【${assignee.label}】の通常発注日ではありません。急ぎなら個別確認してください。`;
+
+      setAgentAnswer(`${material}の発注判断`, `${decision}\n\n${compareLine}\n${scheduleLine}\n\n${sourceLabel}での使用:\n${usageLines}`);
+      state.selectedDay = originalDay;
+    }
+
+    function answerTypedQuestion(text) {
+      const raw = String(text || "").trim();
+      if (!raw) {
+        setAgentAnswer("質問を入力してください", "例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？");
+        return;
+      }
+
+      const originalDay = state.selectedDay;
+      const mentionedDay = dayFromText(raw);
+      if (mentionedDay >= 0) state.selectedDay = mentionedDay;
+
+      const t = normalize(raw);
+      const courseName = courseNameFromText(raw);
+      if (courseName && (t.includes("予約") || t.includes("コース") || t.includes("人") || t.includes("名"))) {
+        answerCourseQuestion(raw, courseName);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (t.includes("リーフ") && (t.includes("在庫") || t.includes("未使用") || t.includes("まるまる") || t.includes("1個") || t.includes("一個"))) {
+        answerLeafInventoryQuestion(raw);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (t.includes("卵") && (t.includes("在庫") || t.includes("0個") || t.includes("ゼロ") || t.includes("余裕") || t.includes("ない") || t.includes("無し"))) {
+        answerEggInventoryQuestion(raw);
+        state.selectedDay = originalDay;
+        return;
+      }
+      const material = materialFromText(raw);
+      if (material && (quantityFromText(raw) || t.includes("必要") || t.includes("足り") || t.includes("在庫") || t.includes("しかない") || t.includes("発注した方") || t.includes("発注必要"))) {
+        answerStockQuestion(raw, material);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (material && (t.includes("どこ") || t.includes("会社") || t.includes("発注") || t.includes("業者"))) {
+        answerMaterialQuestion(material);
+        state.selectedDay = originalDay;
+        return;
+      }
+
+      if (t.includes("共有")) answerAgentQuestion("share");
+      else if (t.includes("追加") || t.includes("新メニュー") || t.includes("登録")) answerAgentQuestion("addMenu");
+      else if (t.includes("土曜") || t.includes("土曜日")) answerAgentQuestion("saturday");
+      else if (t.includes("卵") || t.includes("電話")) answerAgentQuestion("egg");
+      else if (t.includes("買い出し") || t.includes("買出し")) answerAgentQuestion("buying");
+      else if (t.includes("2日") || t.includes("二日")) answerAgentQuestion("twoDay");
+      else if (t.includes("選択中") || t.includes("メニュー") || t.includes("材料")) answerAgentQuestion("selectedOrders");
+      else if (t.includes("会社") || t.includes("業者") || t.includes("発注")) answerAgentQuestion("vendors");
+      else {
+        setAgentAnswer("回答できる質問の例", "この相談機能は発注業務だけに回答します。\n\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？\n例：今日は2日分ある？\n例：共有データの使い方は？");
+      }
+
+      state.selectedDay = originalDay;
+    }
+
+    function answerAgentQuestion(type) {
+      const day = selectedDayOrMessage();
+      if (["vendors", "twoDay", "selectedOrders", "buying", "egg"].includes(type) && !day) {
+        setAgentAnswer("曜日を選択してください", "発注画面で曜日を選ぶと、その曜日に合わせて回答できます。");
+        return;
+      }
+
+      if (type === "vendors") {
+        const labels = day.vendors.map(id => assigneeById(id).label).join("、") || "業者発注なし";
+        setAgentAnswer(`${day.full}の発注会社`, `${labels}\n\n買い出し項目は、選択したメニューに含まれている場合だけ表示されます。`);
+        return;
+      }
+
+      if (type === "twoDay") {
+        const labels = day.twoDay.map(id => assigneeById(id).label.replace("（びっぐえっぐ）", "")).join("、");
+        setAgentAnswer(`${day.full}の2日分発注`, labels ? `本日は、【${labels}】が2日分発注です。` : "この曜日に2日分発注の会社はありません。");
+        return;
+      }
+
+      if (type === "selectedOrders") {
+        const selected = effectiveSelectedMenuIds();
+        if (!selected.length) {
+          setAgentAnswer("料理・仕込みを選択してください", "発注画面で料理や仕込みを選ぶと、会社ごとの発注内容を回答できます。");
+          return;
+        }
+        const groups = visibleGroups();
+        setAgentAnswer("選択中メニューの発注内容", groups.length ? formatGroupLines(groups) : "選択中メニューで、この曜日に発注する項目はありません。");
+        return;
+      }
+
+      if (type === "buying") {
+        const selected = effectiveSelectedMenuIds();
+        if (!selected.length) {
+          setAgentAnswer("料理・仕込みを選択してください", "買い出し項目は、選んだ料理・仕込みに含まれる場合だけ表示されます。");
+          return;
+        }
+        const buyGroup = visibleGroups().find(group => group.assignee === "buy");
+        setAgentAnswer("当日の買い出し", buyGroup?.items.length ? formatGroupLines([buyGroup]) : "選択中メニューに買い出し項目はありません。");
+        return;
+      }
+
+      if (type === "egg") {
+        setAgentAnswer("卵の電話発注", "卵は「卵（びっぐえっぐ）」として表示されます。\nアプリ内の卵欄を確認し、電話で「お疲れ様です。きばり屋です。卵の発注をお願いします。」と伝える運用です。");
+        return;
+      }
+
+      if (type === "share") {
+        setAgentAnswer("共有データの使い方", "1. メニュー管理を開く\n2. 共有の「共有データをコピー」を押す\n3. LINEなどで送る\n4. 受け取った側は共有欄へ貼り付ける\n5. 「貼り付けたデータを取り込む」を押す\n\n共有されるのはメニュー、材料ごとの発注会社、追加した発注会社です。");
+        return;
+      }
+
+      if (type === "addMenu") {
+        setAgentAnswer("新メニュー追加の流れ", "1. メニュー管理を開く\n2. 料理名・仕込み名を入力\n3. 材料名、数量、発注会社を入力\n4. 必要なら材料行を追加\n5. 保存を押す\n6. 確認が出たら共有データをコピーして共有します。");
+        return;
+      }
+
+      if (type === "saturday") {
+        setAgentAnswer("土曜日の確認", "土曜日は業者発注なしです。\n発注画面では、買い出し・店長連絡のみ確認してください。");
+      }
+    }
+
+    function answerMaterialQuestion(material) {
+      const assignee = assigneeById(ruleForIngredient(material));
+      const label = assignee.id === "unknown" ? "未分類確認" : assignee.label;
+      setAgentAnswer(`${material}の発注先`, `「${material}」は【${label}】で確認します。`);
+    }
+
     function switchScreen(screen) {
       state.activeScreen = screen;
       document.getElementById("orderScreen").classList.toggle("active", screen === "order");
       document.getElementById("manageScreen").classList.toggle("active", screen === "manage");
+      document.getElementById("agentScreen").classList.toggle("active", screen === "agent");
       renderNav();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function renderNav() {
       document.getElementById("toOrder").classList.toggle("active", state.activeScreen === "order");
+      document.getElementById("toAgent").classList.toggle("active", state.activeScreen === "agent");
       document.getElementById("toManage").classList.toggle("active", state.activeScreen === "manage");
     }
 
@@ -1622,14 +2172,54 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
+    function goInitialOrderScreen() {
+      state.selectedDay = null;
+      state.selectedDate = localDateIso(new Date());
+      switchScreen("order");
+      render();
+    }
+
+    document.getElementById("appHomeHeader").addEventListener("click", () => {
+      goInitialOrderScreen();
+      toast("最初の画面に戻りました");
+    });
+    document.getElementById("appHomeHeader").addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      goInitialOrderScreen();
+      toast("最初の画面に戻りました");
+    });
+
     document.getElementById("resetChecksBtn").addEventListener("click", () => {
       const prefix = `date:${state.selectedDate}|`;
       Object.keys(state.checks).forEach(key => {
         if (key.startsWith(prefix)) delete state.checks[key];
       });
+      document.querySelectorAll("#taskList .check").forEach(input => {
+        delete state.checks[checkKey(state.selectedDate, input.dataset.item)];
+        input.checked = false;
+      });
+      delete state.selectedMenus[state.selectedDate];
+      delete state.menuMultipliers[state.selectedDate];
       save(STORAGE_KEYS.checks, state.checks);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
       renderOrder();
-      toast("チェックを解除しました");
+      toast("チェックと選択を解除しました");
+    });
+    document.getElementById("completeOrderBtn").addEventListener("click", () => {
+      const date = state.selectedDate;
+      const prefix = `date:${date}|`;
+      Object.keys(state.checks).forEach(key => {
+        if (key.startsWith(prefix)) delete state.checks[key];
+      });
+      delete state.selectedMenus[date];
+      delete state.menuMultipliers[date];
+      save(STORAGE_KEYS.checks, state.checks);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      goInitialOrderScreen();
+      toast("発注を完了しました");
     });
 
     document.getElementById("addIngredientBtn").addEventListener("click", () => addIngredientRow());
@@ -1658,6 +2248,7 @@
       }
     });
     document.getElementById("toOrder").addEventListener("click", () => switchScreen("order"));
+    document.getElementById("toAgent").addEventListener("click", () => switchScreen("agent"));
     document.getElementById("toManage").addEventListener("click", () => switchScreen("manage"));
     document.getElementById("resetMasterBtn").addEventListener("click", () => {
       if (!confirm("メニューと発注会社を初期データに戻しますか？")) return;
@@ -1666,12 +2257,16 @@
       state.checks = {};
       state.openGroups = {};
       state.selectedMenus = {};
+      state.menuMultipliers = {};
+      state.orderSettings = {};
       state.companies = [];
       save(STORAGE_KEYS.menus, state.menus);
       save(STORAGE_KEYS.rules, state.rules);
       save(STORAGE_KEYS.checks, state.checks);
       save(STORAGE_KEYS.openGroups, state.openGroups);
       save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      save(STORAGE_KEYS.orderSettings, state.orderSettings);
       save(STORAGE_KEYS.companies, state.companies);
       clearMenuForm();
       clearCompanyForm();

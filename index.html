@@ -921,7 +921,7 @@
           <p class="agent-lead">発注業務について質問してください。このアプリ内の曜日・メニュー・発注会社ルールをもとに回答します。</p>
           <div class="field">
             <label for="agentPromptInput">質問内容</label>
-            <textarea id="agentPromptInput" placeholder="例：明日すき焼きコース8名なら？&#10;例：今白ネギが5足しかないけど発注必要？&#10;例：卵が0個なら何kg？"></textarea>
+            <textarea id="agentPromptInput" placeholder="例：明日すきやきコース16名なら？&#10;例：今白ネギが5足しかないけど発注必要？&#10;例：卵が0個なら何kg？"></textarea>
           </div>
           <div class="form-actions">
             <button class="ghost-btn" id="resetAgentBtn" type="button">リセット</button>
@@ -930,7 +930,7 @@
         </div>
         <div class="panel agent-answer" id="agentAnswer">
           <div class="agent-answer-title">質問を入力してください</div>
-          <div class="agent-answer-body">コース予約人数、在庫数からの発注判断、曜日別の発注、2日分発注、材料の発注先などを確認できます。</div>
+          <div class="agent-answer-body"></div>
         </div>
       </section>
     </main>
@@ -991,7 +991,7 @@
     ];
 
     const DEFAULT_MENUS = [
-      menu("水炊き（4人前基準）", [["キャベツ","1/4玉"],["えのき","1/2袋"],["春菊","1"],["豆腐","1丁"],["舞茸","1"],["しらたき","1個"],["油揚げ","1枚"]]),
+      menu("水炊き", [["キャベツ","1/4玉"],["えのき","1/2袋"],["春菊","1"],["豆腐","1丁"],["舞茸","1"],["しらたき","1個"],["油揚げ","1枚"]]),
       menu("すき焼き", [["白菜",""],["白ネギ",""],["舞茸",""],["春菊",""],["糸蒟蒻",""],["豆腐",""]]),
       menu("リーフ（サラダ）", [["サニーレタス","1"],["水菜","1"],["赤パプ","1"],["黄パプ","1"]]),
       menu("やくみ（薬味）", [["緑かいわれ","3"],["桜かいわれ","2"],["茗荷","3"]]),
@@ -1015,6 +1015,35 @@
       { label: "金", full: "金曜日", vendors: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"], twoDay: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"] },
       { label: "土", full: "土曜日", vendors: [], twoDay: [] }
     ];
+
+    const NAME_ALIASES = {
+      "水炊き": ["水たき", "みずたき", "ミズタキ"],
+      "すき焼き": ["すきやき", "スキヤキ", "すき焼", "すき焼きコース"],
+      "白ネギ": ["白ねぎ", "白葱", "しろねぎ", "しろネギ"],
+      "長ネギ": ["長ねぎ", "長葱", "ながねぎ", "ながネギ"],
+      "細ネギ": ["細ねぎ", "細葱", "ほそねぎ", "ほそネギ"],
+      "きゅうり": ["胡瓜", "キュウリ"],
+      "しいたけ": ["椎茸", "シイタケ"],
+      "豆腐": ["とうふ", "トウフ"],
+      "卵": ["玉子", "たまご", "タマゴ"],
+      "糸蒟蒻": ["糸こんにゃく", "糸こん", "イトコン"],
+      "しらたき": ["白滝", "シラタキ"],
+      "えのき": ["榎茸", "えのき茸", "エノキ"],
+      "舞茸": ["まいたけ", "マイタケ"],
+      "春菊": ["しゅんぎく", "シュンギク"],
+      "白菜": ["はくさい", "ハクサイ"],
+      "長芋": ["ながいも", "ナガイモ"],
+      "茗荷": ["みょうが", "ミョウガ"],
+      "赤パプ": ["赤パプリカ", "赤ぱぷ"],
+      "黄パプ": ["黄パプリカ", "黄ぱぷ"],
+      "緑かいわれ": ["緑カイワレ", "みどりかいわれ"],
+      "桜かいわれ": ["桜カイワレ", "さくらかいわれ"],
+      "上新粉": ["じょうしんこ", "ジョウシンコ"],
+      "小麦粉": ["こむぎこ", "コムギコ"],
+      "うんぜんはむ": ["雲仙ハム", "うんぜんハム"],
+      "えび": ["海老", "エビ"],
+      "ポテト": ["ぽてと"]
+    };
 
     const state = {
       activeScreen: "order",
@@ -1105,7 +1134,20 @@
     }
 
     function normalize(text) {
-      return String(text || "").trim().replace(/\s+/g, "").toLowerCase();
+      return String(text || "")
+        .normalize("NFKC")
+        .trim()
+        .replace(/\s+/g, "")
+        .toLowerCase();
+    }
+
+    function nameCandidates(name) {
+      return [name, ...(NAME_ALIASES[name] || [])].filter(Boolean);
+    }
+
+    function textIncludesName(text, name) {
+      const t = normalize(text);
+      return nameCandidates(name).some(candidate => t.includes(normalize(candidate)));
     }
 
     function escapeHtml(value) {
@@ -1224,6 +1266,19 @@
       return text.replace(/(\d+(?:\.\d+)?)/g, (match, number) => formatScaledNumber(Number(number) * multiplier));
     }
 
+    function shouldMoveToBuyWhenVendorUnavailable(assignee, ingredient, menuItem, day) {
+      if (!BASE_VENDOR_IDS.includes(assignee) || day.vendors.includes(assignee)) return false;
+
+      const materialName = normalize(ingredient.name);
+      const menuName = normalize(menuItem.name);
+      if (assignee === "muraoka") return true;
+      if (assignee !== "nabata") return false;
+
+      const waterTofu = materialName === normalize("豆腐") && menuName.includes(normalize("水炊き"));
+      const flourCheck = ["上新粉", "小麦粉"].some(name => materialName === normalize(name));
+      return waterTofu || flourCheck;
+    }
+
     function visibleGroups() {
       const day = DAYS[state.selectedDay];
       const groups = new Map();
@@ -1240,12 +1295,14 @@
         const cheeseTofuBuy = normalize(menuItem.name).includes(normalize("チーズ豆腐"));
         menuItem.ingredients.forEach(ingredient => {
           const assignee = cheeseTofuBuy ? "buy" : ruleForIngredient(ingredient.name);
+          const fallbackToBuy = shouldMoveToBuyWhenVendorUnavailable(assignee, ingredient, menuItem, day);
+          const displayAssignee = fallbackToBuy ? "buy" : assignee;
           const isVendor = BASE_VENDOR_IDS.includes(assignee);
-          if (isVendor && !day.vendors.includes(assignee)) return;
-          ensureGroup(assignee).push({
+          if (isVendor && !day.vendors.includes(assignee) && !fallbackToBuy) return;
+          ensureGroup(displayAssignee).push({
             name: ingredient.name.trim(),
             qty: scaleQuantity(ingredient.qty.trim(), multiplier),
-            source: multiplier > 1 ? `${menuItem.name} x${multiplier}` : menuItem.name
+            source: `${multiplier > 1 ? `${menuItem.name} x${multiplier}` : menuItem.name}${fallbackToBuy ? `（${assigneeById(assignee).label}発注不可）` : ""}`
           });
         });
       });
@@ -1407,6 +1464,11 @@
       const springRollShiitake = springRoll?.ingredients.find(item => normalize(item.name) === normalize("しいたけ"));
       if (springRollShiitake) {
         springRollShiitake.qty = "6個入りを5";
+        save(STORAGE_KEYS.menus, state.menus);
+      }
+      const waterMenu = state.menus.find(menuItem => normalize(menuItem.name) === normalize("水炊き（4人前基準）"));
+      if (waterMenu) {
+        waterMenu.name = "水炊き";
         save(STORAGE_KEYS.menus, state.menus);
       }
       if (!menuByName("手羽唐")) {
@@ -1869,7 +1931,7 @@
     function resetAgentQuestion() {
       const input = document.getElementById("agentPromptInput");
       if (input) input.value = "";
-      setAgentAnswer("質問を入力してください", "コース予約人数、在庫数からの発注判断、曜日別の発注、2日分発注、材料の発注先などを確認できます。");
+      setAgentAnswer("質問を入力してください", "");
       toast("相談内容をリセットしました");
     }
 
@@ -1888,33 +1950,57 @@
     function dayFromText(text) {
       const t = normalize(text);
       if (t.includes("今日") || t.includes("本日")) return new Date().getDay();
+      if (t.includes("明後日") || t.includes("あさって")) return (new Date().getDay() + 2) % 7;
+      if (t.includes("明日") || t.includes("あした") || t.includes("翌日")) return (new Date().getDay() + 1) % 7;
       return DAYS.findIndex(day => t.includes(normalize(`${day.label}曜`)) || t.includes(normalize(day.full)));
     }
 
     function materialFromText(text) {
-      const t = normalize(text);
       return [...state.rules]
         .map(rule => rule.material)
         .filter(Boolean)
         .sort((a, b) => normalize(b).length - normalize(a).length)
-        .find(material => t.includes(normalize(material)));
+        .find(material => textIncludesName(text, material));
     }
 
     function courseNameFromText(text) {
-      const t = normalize(text);
-      if (t.includes(normalize("水炊き"))) return "水炊き";
-      if (t.includes(normalize("すき焼き"))) return "すき焼き";
+      if (textIncludesName(text, "水炊き")) return "水炊き";
+      if (textIncludesName(text, "すき焼き")) return "すき焼き";
       return "";
+    }
+
+    function cleanQuantityUnit(unit) {
+      let value = String(unit || "");
+      ["しかない", "足りない", "でいい", "だったら", "ください", "しか", "だけ", "ある", "あり", "残り", "残", "在庫", "なら", "発注", "注文", "必要", "足りる", "です", "か"].forEach(word => {
+        value = value.replace(new RegExp(`${word}$`), "");
+      });
+      return value.replace(/[？?。,.、，]$/g, "");
     }
 
     function quantityFromText(text) {
       const normalizedText = String(text || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
       const match = normalizedText.match(/(\d+(?:\.\d+)?)\s*([^\d\s。、，,.！？?]*)(?:しか|だけ|ある|残|在庫|$)/);
       if (!match) return null;
+      const unit = cleanQuantityUnit(match[2]);
       return {
         value: Number(match[1]),
-        unit: match[2] || "",
-        label: `${match[1]}${match[2] || ""}`
+        unit,
+        label: `${match[1]}${unit}`
+      };
+    }
+
+    function roundingQuantityFromText(text) {
+      const normalizedText = String(text || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedText.match(/(\d+(?:\.\d+)?)\s*([^\d\s。、，,.！？?]*)(?:って|は|を|で|発注|注文|$)/);
+      if (!match) return null;
+      const value = Number(match[1]);
+      if (!Number.isFinite(value) || Number.isInteger(value)) return null;
+      const unit = cleanQuantityUnit(match[2]);
+      return {
+        value,
+        rounded: Math.round(value),
+        unit,
+        label: `${match[1]}${unit}`
       };
     }
 
@@ -1935,7 +2021,20 @@
         .filter(menuItem => ids.has(menuItem.id))
         .flatMap(menuItem => menuItem.ingredients
           .filter(ingredient => normalize(ingredient.name) === normalize(material))
-          .map(ingredient => ({ menu: menuItem.name, qty: ingredient.qty || "数量未設定" })));
+          .map(ingredient => ({ menu: menuItem.name, qty: ingredient.qty || "" })));
+    }
+
+    function isGenericNegiText(text) {
+      const t = normalize(text);
+      const hasNegi = ["ネギ", "ねぎ", "葱"].some(word => t.includes(normalize(word)));
+      const hasSpecificNegi = ["白ネギ", "長ネギ", "細ネギ"].some(name => textIncludesName(text, name));
+      return hasNegi && !hasSpecificNegi;
+    }
+
+    function footRequirementFromQty(qty) {
+      const text = String(qty || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = text.match(/(\d+(?:\.\d+)?)\s*足/);
+      return match ? Number(match[1]) : null;
     }
 
     function isAssigneeScheduled(assignee, day) {
@@ -1958,9 +2057,9 @@
       }
       const multiplier = Math.max(1, Math.ceil(guests / 4));
       const lines = menuItem.ingredients.map(ingredient => {
-        const qty = ingredient.qty ? scaleQuantity(ingredient.qty, multiplier) : `数量未設定 x${multiplier}`;
+        const qty = ingredient.qty ? `${scaleQuantity(ingredient.qty, multiplier)} / ` : "";
         const assignee = assigneeById(ruleForIngredient(ingredient.name)).label;
-        return `・${ingredient.name}: ${qty} / ${assignee}`;
+        return `・${ingredient.name}: ${qty}${assignee}`;
       }).join("\n");
       setAgentAnswer(`${courseName}コース ${guests}名の目安`, `4人前基準で ${multiplier} 回分として計算します。\n\n${lines}\n\n発注画面では、必要に応じて${courseName}の数量を ${multiplier} に変更してください。`);
     }
@@ -1979,6 +2078,41 @@
       const isZero = t.includes("0個") || t.includes("ゼロ") || t.includes("ない") || t.includes("無し");
       const amount = isZero ? "7kg" : "5kg";
       setAgentAnswer("卵の発注量", `卵の在庫が${isZero ? "0個" : "少し余裕あり"}なら、${amount} を発注目安にしてください。\n\n電話手順: 電話帳 ➔ びっくえっぐ ➔ 外線`);
+    }
+
+    function answerRoundingQuestion(text) {
+      const parsed = roundingQuantityFromText(text);
+      if (!parsed) return false;
+      const t = normalize(text);
+      const wantsOrderCount = t.includes("って") || t.includes("四捨五入") || t.includes("何個") || t.includes("何玉") || t.includes("何袋") || t.includes("すれば") || t.includes("でいい");
+      if (!wantsOrderCount) return false;
+      const unit = parsed.unit || "個";
+      const roundedLabel = `${parsed.rounded}${unit}`;
+      setAgentAnswer("端数の発注数", `${parsed.label} は四捨五入で ${roundedLabel} です。\n\nこのタイプの端数相談は、すべて四捨五入で判断します。`);
+      return true;
+    }
+
+    function answerGenericNegiQuestion(text) {
+      if (!isGenericNegiText(text)) return false;
+      const stock = quantityFromText(text);
+      if (!stock || stock.unit !== "足") return false;
+
+      const selectedLongNegi = materialUsage("長ネギ", true);
+      const longNegiUsages = selectedLongNegi.length ? selectedLongNegi : materialUsage("長ネギ", false);
+      const required = longNegiUsages
+        .map(item => footRequirementFromQty(item.qty))
+        .filter(value => value !== null)
+        .reduce((sum, value) => sum + value, 0);
+      if (!required) return false;
+
+      const shortage = Math.max(0, required - stock.value);
+      const sourceLabel = selectedLongNegi.length ? "選択中メニュー" : "登録メニュー全体";
+      const usageLines = longNegiUsages.map(item => `・${item.menu}: 長ネギ ${item.qty}`).join("\n");
+      const decision = shortage > 0
+        ? `結論: 長ネギはあと ${shortage}足 必要そうです。`
+        : "結論: 長ネギは登録数量だけで見れば足りそうです。";
+      setAgentAnswer("ネギの発注判断", `${decision}\n\nねぎまの長ネギは「10足合わせ」で見ます。\n現在庫は ${stock.label}、必要目安は ${required}足 です。\n\n${sourceLabel}での使用:\n${usageLines}\n\n白ネギは別で「1足で7本」目安です。白ネギについて聞く場合は「白ネギ1足ある」のように入力してください。`);
+      return true;
     }
 
     function answerStockQuestion(text, material) {
@@ -2012,6 +2146,19 @@
         } else if (material === "白ネギ" && stock.unit === "足") {
           compareLine = `現在庫は ${stock.label} です。白ネギは「1足で7本」目安なので、約${stock.value * 7}本分として見られます。`;
           decision = selectedUsages.length ? "結論: 選択中メニューで使うため、ねぎま本数やすき焼き分を見て不足しそうなら村岡へ発注してください。" : "結論: 今日使うメニューを選択してから判断してください。選択中メニューに白ネギが入るなら発注候補です。";
+        } else if (material === "長ネギ" && stock.unit === "足") {
+          const required = usages
+            .map(item => footRequirementFromQty(item.qty))
+            .filter(value => value !== null)
+            .reduce((sum, value) => sum + value, 0);
+          if (required) {
+            const shortage = Math.max(0, required - stock.value);
+            compareLine = `${sourceLabel}の長ネギは「10足合わせ」目安です。必要目安は ${required}足、現在庫は ${stock.label} です。`;
+            decision = shortage > 0 ? `結論: あと ${shortage}足 必要そうです。` : "結論: 登録数量だけで見れば、急ぎの発注は不要そうです。";
+          } else {
+            compareLine = `現在庫は ${stock.label} と読み取りました。長ネギは、ねぎまでは「10足合わせ」目安です。`;
+            decision = "結論: 今日使うメニューを選択してから判断してください。";
+          }
         } else {
           compareLine = `現在庫は ${stock.label} と読み取りました。`;
           decision = selectedUsages.length ? "結論: 選択中メニューで使う材料なので、少なければ発注候補です。" : "結論: 選択中メニューでは確認できません。今日使うメニューを選ぶと判断しやすくなります。";
@@ -2029,7 +2176,7 @@
     function answerTypedQuestion(text) {
       const raw = String(text || "").trim();
       if (!raw) {
-        setAgentAnswer("質問を入力してください", "例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？");
+        setAgentAnswer("質問を入力してください", "例：明日すきやきコース16名なら？\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？");
         return;
       }
 
@@ -2041,6 +2188,14 @@
       const courseName = courseNameFromText(raw);
       if (courseName && (t.includes("予約") || t.includes("コース") || t.includes("人") || t.includes("名"))) {
         answerCourseQuestion(raw, courseName);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (answerRoundingQuestion(raw)) {
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (answerGenericNegiQuestion(raw)) {
         state.selectedDay = originalDay;
         return;
       }
@@ -2075,7 +2230,7 @@
       else if (t.includes("選択中") || t.includes("メニュー") || t.includes("材料")) answerAgentQuestion("selectedOrders");
       else if (t.includes("会社") || t.includes("業者") || t.includes("発注")) answerAgentQuestion("vendors");
       else {
-        setAgentAnswer("回答できる質問の例", "この相談機能は発注業務だけに回答します。\n\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？\n例：今日は2日分ある？\n例：共有データの使い方は？");
+        setAgentAnswer("回答できる質問の例", "この相談機能は発注業務だけに回答します。\n\n例：明日すきやきコース16名なら？\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？\n例：今日は2日分ある？\n例：共有データの使い方は？");
       }
 
       state.selectedDay = originalDay;

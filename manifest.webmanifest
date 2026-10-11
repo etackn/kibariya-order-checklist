@@ -1,0 +1,17 @@
+{
+  "name": "きばり屋 発注確認リスト",
+  "short_name": "きばり屋発注",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#17191d",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "396x396",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

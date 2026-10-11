@@ -41,6 +41,7 @@
     html {
       min-height: 100%;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
       background: var(--home-bg);
     }
 
@@ -51,6 +52,7 @@
       min-height: 100svh;
       min-height: 100dvh;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
       background: var(--home-bg);
       color: var(--ink);
       letter-spacing: 0;
@@ -76,6 +78,7 @@
       background: var(--bg);
       position: relative;
       padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 18px);
+      overscroll-behavior-y: contain;
     }
 
     .app.home-mode {
@@ -1490,8 +1493,11 @@
       selectedMenus: "kibariya.selectedMenus.v1",
       menuMultipliers: "kibariya.menuMultipliers.v1",
       orderSettings: "kibariya.orderSettings.v1",
-      companies: "kibariya.companies.v1"
+      companies: "kibariya.companies.v1",
+      activeScreen: "kibariya.activeScreen.v1"
     };
+
+    const VALID_SCREENS = ["home", "order", "agent", "manage"];
 
     const ASSIGNEES = [
       { id: "buy", label: "当日の買い出し", order: 1, icon: "買", cls: "buy" },
@@ -1575,7 +1581,7 @@
     };
 
     const state = {
-      activeScreen: "home",
+      activeScreen: savedActiveScreen(),
       selectedDate: localDateIso(new Date()),
       selectedDay: null,
       menus: readJson(STORAGE_KEYS.menus, DEFAULT_MENUS),
@@ -1613,6 +1619,11 @@
       } catch (error) {
         return structuredClone(fallback);
       }
+    }
+
+    function savedActiveScreen() {
+      const screen = localStorage.getItem(STORAGE_KEYS.activeScreen);
+      return VALID_SCREENS.includes(screen) ? screen : "home";
     }
 
     function save(key, value) {
@@ -2023,7 +2034,15 @@
       appRoot?.classList.toggle("visual-bg-mode", ["home", "order", "agent", "manage"].includes(state.activeScreen));
     }
 
+    function applyScreenVisibility() {
+      document.getElementById("homeScreen").classList.toggle("active", state.activeScreen === "home");
+      document.getElementById("orderScreen").classList.toggle("active", state.activeScreen === "order");
+      document.getElementById("manageScreen").classList.toggle("active", state.activeScreen === "manage");
+      document.getElementById("agentScreen").classList.toggle("active", state.activeScreen === "agent");
+    }
+
     function render() {
+      applyScreenVisibility();
       renderAppShell();
       renderTabs();
       renderOrder();
@@ -2979,10 +2998,8 @@
 
     function switchScreen(screen) {
       state.activeScreen = screen;
-      document.getElementById("homeScreen").classList.toggle("active", screen === "home");
-      document.getElementById("orderScreen").classList.toggle("active", screen === "order");
-      document.getElementById("manageScreen").classList.toggle("active", screen === "manage");
-      document.getElementById("agentScreen").classList.toggle("active", screen === "agent");
+      localStorage.setItem(STORAGE_KEYS.activeScreen, screen);
+      applyScreenVisibility();
       renderAppShell();
       renderNav();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3043,6 +3060,16 @@
       switchScreen("home");
       render();
     }
+
+    let pullStartY = 0;
+    document.addEventListener("touchstart", event => {
+      pullStartY = event.touches[0]?.clientY || 0;
+    }, { passive: true });
+    document.addEventListener("touchmove", event => {
+      const currentY = event.touches[0]?.clientY || 0;
+      const pullingDownAtTop = window.scrollY <= 0 && currentY > pullStartY;
+      if (pullingDownAtTop) event.preventDefault();
+    }, { passive: false });
 
     document.getElementById("appHomeHeader").addEventListener("click", () => {
       goInitialOrderScreen();

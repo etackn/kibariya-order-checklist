@@ -11,6 +11,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
   <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
   <title>きばり屋</title>
   <style>
     :root {
@@ -60,46 +63,163 @@
       padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 18px);
     }
 
+    .app.home-mode {
+      max-width: none;
+      background: #000;
+      padding-bottom: 0;
+    }
+
     .topbar {
       position: sticky;
       top: 0;
       z-index: 20;
-      background: #17191d;
+      background: #000;
       color: #fff;
-      padding: 16px 16px 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.16);
+      padding: 20px 24px;
+      border-bottom: 0;
+      box-shadow: none;
       cursor: pointer;
       user-select: none;
     }
 
     .topbar:active {
-      background: #22252b;
+      background: #111;
     }
 
     .topbar-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: flex-start;
+      width: min(100%, 1060px);
+      margin: 0 auto;
     }
 
-    .brand-block {
-      min-width: 0;
+    .header-logo {
+      width: clamp(66px, 9vw, 94px);
+      height: clamp(66px, 9vw, 94px);
+      background: #000;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
     }
 
-    .eyebrow {
-      font-size: 12px;
-      color: rgba(255,255,255,.72);
-      line-height: 1.2;
-      margin-bottom: 4px;
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.08);
+      display: block;
     }
 
-    h1 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.25;
-      font-weight: 800;
-      letter-spacing: 0;
+    .home-screen {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(52px, 8vw, 92px) clamp(24px, 8vw, 96px) 120px;
+      min-height: calc(100svh - 119px);
+    }
+
+    .home-screen::before,
+    .home-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .home-screen::before {
+      background: url("./assets/background.png") center / cover no-repeat;
+      filter: blur(1.5px);
+      transform: scale(1.02);
+    }
+
+    .home-screen::after {
+      background:
+        radial-gradient(circle at center, rgba(0,0,0,.16) 0%, rgba(0,0,0,.38) 54%, rgba(0,0,0,.72) 100%),
+        rgba(0,0,0,.42);
+    }
+
+    .home-card-grid {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 980px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(28px, 11vw, 160px);
+      align-items: start;
+    }
+
+    .home-card {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      border: 0;
+      background: #111;
+      border-radius: 4px;
+      box-shadow: 0 26px 70px rgba(0,0,0,.38), 0 8px 18px rgba(0,0,0,.24);
+      display: block;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .home-card-button {
+      padding: 0;
+      transition: transform .28s ease, box-shadow .28s ease, filter .28s ease;
+    }
+
+    .home-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .home-card-button:hover,
+    .home-card-button:focus-visible {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 34px 86px rgba(0,0,0,.48), 0 12px 24px rgba(0,0,0,.32);
+      outline: 0;
+    }
+
+    .order-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 48%;
+      background: linear-gradient(0deg, rgba(0,0,0,.76) 0%, rgba(0,0,0,.34) 54%, transparent 100%);
+      opacity: .92;
+      pointer-events: none;
+    }
+
+    .order-card-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: clamp(22px, 5vw, 44px);
+      z-index: 1;
+      color: #fff;
+      font-family: "Zen Kaku Gothic New", -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.4rem);
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-align: center;
+      text-shadow: 0 3px 14px rgba(0,0,0,.75);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1);
+      pointer-events: none;
+    }
+
+    .order-card:hover .order-card-label,
+    .order-card:focus-visible .order-card-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .home-card-button:active {
+      transform: scale(.985);
+      box-shadow: 0 18px 48px rgba(0,0,0,.4);
     }
 
     .screen {
@@ -772,6 +892,10 @@
       gap: 8px;
     }
 
+    .home-mode .bottom-nav {
+      display: none;
+    }
+
     .nav-btn {
       border-radius: 8px;
       background: #f1f3f5;
@@ -824,6 +948,51 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 16px 18px;
+      }
+
+      .topbar-row {
+        justify-content: flex-start;
+      }
+
+      .home-screen {
+        min-height: calc(100svh - 90px);
+      }
+
+      .home-card-grid {
+        grid-template-columns: 1fr;
+        width: min(100%, 360px);
+        gap: 28px;
+      }
+    }
+
+    @media (hover: none) {
+      .order-card-label {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .home-card-button,
+      .order-card-label,
+      .toast {
+        transition: none;
+      }
+
+      .home-card-button:hover,
+      .home-card-button:focus-visible {
+        transform: none;
+      }
+
+      .order-card-label {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
     @media (min-width: 700px) {
       body {
         background:
@@ -833,18 +1002,29 @@
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app home-mode" id="appRoot">
     <header class="topbar" id="appHomeHeader" role="button" tabindex="0" aria-label="最初の画面に戻る">
       <div class="topbar-row">
-        <div class="brand-block">
-          <div class="eyebrow">居酒屋 きばり屋</div>
-          <h1>発注確認リスト</h1>
+        <div class="header-logo" aria-hidden="true">
+          <img src="./apple-touch-icon.png" alt="" />
         </div>
       </div>
     </header>
 
     <main>
-      <section class="screen active" id="orderScreen">
+      <section class="screen active home-screen" id="homeScreen">
+        <div class="home-card-grid">
+          <button class="home-card home-card-button" type="button" aria-label="将来の機能">
+            <img src="./assets/button-left.png" alt="将来の機能" />
+          </button>
+          <button class="home-card home-card-button order-card" id="openExistingFeatureCard" type="button" aria-label="発注確認リストを開く">
+            <img src="./assets/button-right.png" alt="発注確認リスト" />
+            <span class="order-card-label">発注</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="screen" id="orderScreen">
         <div class="day-tabs" id="dayTabs" aria-label="曜日選択"></div>
         <div id="orderAlerts"></div>
         <div id="menuSelection"></div>
@@ -961,6 +1141,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    const APP_TITLE = "きばり屋";
+
     const STORAGE_KEYS = {
       menus: "kibariya.menus.v1",
       rules: "kibariya.rules.v1",
@@ -1054,7 +1236,7 @@
     };
 
     const state = {
-      activeScreen: "order",
+      activeScreen: "home",
       selectedDate: localDateIso(new Date()),
       selectedDay: null,
       menus: readJson(STORAGE_KEYS.menus, DEFAULT_MENUS),
@@ -1486,7 +1668,16 @@
       save(STORAGE_KEYS.rules, state.rules);
     }
 
+    function renderAppShell() {
+      document.title = APP_TITLE;
+      document.querySelectorAll("[data-app-title]").forEach((el) => {
+        el.textContent = APP_TITLE;
+      });
+      document.getElementById("appRoot")?.classList.toggle("home-mode", state.activeScreen === "home");
+    }
+
     function render() {
+      renderAppShell();
       renderTabs();
       renderOrder();
       renderManage();
@@ -2313,9 +2504,11 @@
 
     function switchScreen(screen) {
       state.activeScreen = screen;
+      document.getElementById("homeScreen").classList.toggle("active", screen === "home");
       document.getElementById("orderScreen").classList.toggle("active", screen === "order");
       document.getElementById("manageScreen").classList.toggle("active", screen === "manage");
       document.getElementById("agentScreen").classList.toggle("active", screen === "agent");
+      renderAppShell();
       renderNav();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -2338,7 +2531,7 @@
     function goInitialOrderScreen() {
       state.selectedDay = null;
       state.selectedDate = localDateIso(new Date());
-      switchScreen("order");
+      switchScreen("home");
       render();
     }
 
@@ -2383,6 +2576,11 @@
       save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
       goInitialOrderScreen();
       toast("発注を完了しました");
+    });
+
+    document.getElementById("openExistingFeatureCard").addEventListener("click", () => {
+      switchScreen("order");
+      render();
     });
 
     document.getElementById("addIngredientBtn").addEventListener("click", () => addIngredientRow());

@@ -1,6 +1,6 @@
 {
-  "name": "きばり屋 発注確認リスト",
-  "short_name": "きばり屋発注",
+  "name": "きばり屋",
+  "short_name": "きばり屋",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

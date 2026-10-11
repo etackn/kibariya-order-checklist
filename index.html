@@ -738,6 +738,40 @@
       line-height: 1.3;
     }
 
+    .section-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+
+    .section-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .section-toggle.open {
+      transform: rotate(180deg);
+      background: #edf2f7;
+    }
+
+    .collapsible-section[hidden] {
+      display: none !important;
+    }
+
+    .visual-bg-mode .section-title h2 {
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,.7);
+    }
+
     .form {
       padding: 12px;
     }
@@ -778,7 +812,7 @@
 
     .ingredient-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, .8fr) 38px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 38px;
       gap: 8px;
       margin-bottom: 8px;
       align-items: center;
@@ -789,6 +823,46 @@
       min-height: 40px;
       font-size: 13px;
       font-weight: 800;
+    }
+
+    .qty-stepper {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) 38px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .qty-stepper input {
+      min-height: 42px;
+      border: 0;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      text-align: center;
+      padding: 8px 6px;
+      font-weight: 800;
+    }
+
+    .qty-stepper input:focus {
+      box-shadow: none;
+    }
+
+    .qty-stepper-btn {
+      min-width: 38px;
+      min-height: 42px;
+      border: 0;
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .qty-stepper-btn:active {
+      background: #edf2f7;
     }
 
     .icon-btn {
@@ -833,11 +907,31 @@
       margin-bottom: 10px;
     }
 
+    .menu-card.selected {
+      border-color: rgba(47, 142, 94, .55);
+      box-shadow: 0 0 0 3px rgba(47, 142, 94, .12), 0 5px 14px rgba(23,30,44,.05);
+    }
+
     .menu-card-head {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      align-items: flex-start;
+      align-items: center;
+    }
+
+    .menu-card-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .menu-select-check {
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+      flex: 0 0 auto;
+      accent-color: var(--green);
     }
 
     .menu-name {
@@ -851,13 +945,46 @@
       display: flex;
       gap: 6px;
       flex: 0 0 auto;
+      align-items: center;
+    }
+
+    .tiny-btn.danger-btn {
+      color: #fff;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .tiny-btn.danger-btn:disabled {
+      opacity: .45;
+    }
+
+    .menu-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .menu-card.expanded .menu-toggle {
+      transform: rotate(180deg);
+      background: #edf2f7;
     }
 
     .chips {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       gap: 6px;
       margin-top: 9px;
+    }
+
+    .menu-card.expanded .chips {
+      display: flex;
     }
 
     .rule-list {
@@ -1011,6 +1138,51 @@
     .toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
+    }
+
+    .confirm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0,0,0,.48);
+    }
+
+    .confirm-modal[hidden] {
+      display: none;
+    }
+
+    .confirm-card {
+      width: min(360px, 100%);
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      box-shadow: 0 22px 60px rgba(0,0,0,.28);
+      padding: 16px;
+    }
+
+    .confirm-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .confirm-body {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
     @media (max-width: 640px) {
@@ -1208,9 +1380,16 @@
 
         <div class="section-title">
           <h2>メニュー一覧</h2>
-          <button class="tiny-btn" id="resetMasterBtn" type="button">初期化</button>
+          <div class="section-actions">
+            <button class="section-toggle" id="toggleMenuListBtn" type="button" aria-expanded="false" aria-controls="menuListPanel" aria-label="メニュー一覧を表示">⌄</button>
+            <button class="tiny-btn" id="selectMenuModeBtn" type="button">選択</button>
+            <button class="tiny-btn danger-btn" id="bulkDeleteMenusBtn" type="button" hidden>削除</button>
+            <button class="tiny-btn" id="cancelMenuSelectBtn" type="button" hidden>解除</button>
+          </div>
         </div>
-        <div id="menuList"></div>
+        <div class="collapsible-section" id="menuListPanel" hidden>
+          <div id="menuList"></div>
+        </div>
 
         <div class="section-title">
           <h2>共有</h2>
@@ -1242,7 +1421,11 @@
             <button class="primary-btn" id="saveCompanyBtn" type="button">保存</button>
           </div>
         </div>
-        <div class="panel">
+        <div class="section-title">
+          <h2>登録済み発注会社</h2>
+          <button class="section-toggle" id="toggleCompanyListBtn" type="button" aria-expanded="false" aria-controls="companyListPanel" aria-label="登録済み発注会社を表示">⌄</button>
+        </div>
+        <div class="panel collapsible-section" id="companyListPanel" hidden>
           <div class="rule-list" id="companyList"></div>
         </div>
       </section>
@@ -1283,6 +1466,16 @@
         <span class="nav-text">メニュー管理</span>
       </button>
     </nav>
+  </div>
+  <div class="confirm-modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+    <div class="confirm-card">
+      <h2 class="confirm-title" id="confirmTitle">確認</h2>
+      <div class="confirm-body" id="confirmBody"></div>
+      <div class="confirm-actions">
+        <button class="secondary-btn" id="confirmCancelBtn" type="button">キャンセル</button>
+        <button class="primary-btn" id="confirmOkBtn" type="button">はい</button>
+      </div>
+    </div>
   </div>
   <div class="toast" id="toast"></div>
 
@@ -1392,7 +1585,13 @@
       selectedMenus: readJson(STORAGE_KEYS.selectedMenus, {}),
       menuMultipliers: readJson(STORAGE_KEYS.menuMultipliers, {}),
       orderSettings: readJson(STORAGE_KEYS.orderSettings, {}),
-      companies: readJson(STORAGE_KEYS.companies, [])
+      companies: readJson(STORAGE_KEYS.companies, []),
+      manageSections: {
+        menus: false,
+        companies: false
+      },
+      menuSelectionMode: false,
+      selectedManageMenus: []
     };
 
     function uid() {
@@ -1821,7 +2020,7 @@
       });
       const appRoot = document.getElementById("appRoot");
       appRoot?.classList.toggle("home-mode", state.activeScreen === "home");
-      appRoot?.classList.toggle("visual-bg-mode", state.activeScreen === "home" || state.activeScreen === "order");
+      appRoot?.classList.toggle("visual-bg-mode", ["home", "order", "agent", "manage"].includes(state.activeScreen));
     }
 
     function render() {
@@ -2037,6 +2236,28 @@
       renderIngredientRows();
       renderMenuList();
       renderCompanyList();
+      renderManageSections();
+    }
+
+    function renderManageSections() {
+      [
+        { key: "menus", button: "toggleMenuListBtn", panel: "menuListPanel", label: "メニュー一覧" },
+        { key: "companies", button: "toggleCompanyListBtn", panel: "companyListPanel", label: "登録済み発注会社" }
+      ].forEach(item => {
+        const btn = document.getElementById(item.button);
+        const panel = document.getElementById(item.panel);
+        if (!btn || !panel) return;
+        const expanded = Boolean(state.manageSections[item.key]);
+        panel.hidden = !expanded;
+        btn.classList.toggle("open", expanded);
+        btn.setAttribute("aria-expanded", String(expanded));
+        btn.setAttribute("aria-label", `${item.label}を${expanded ? "閉じる" : "表示"}`);
+      });
+    }
+
+    function toggleManageSection(key) {
+      state.manageSections[key] = !state.manageSections[key];
+      renderManageSections();
     }
 
     function renderIngredientRows() {
@@ -2053,6 +2274,29 @@
       });
     }
 
+    function toHalfWidthNumberText(value) {
+      return String(value).replace(/[０-９．]/g, char => {
+        if (char === "．") return ".";
+        return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
+      });
+    }
+
+    function formatAdjustedNumber(value) {
+      return Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10);
+    }
+
+    function adjustQuantityText(value, delta) {
+      const raw = String(value || "").trim();
+      if (!raw) return delta > 0 ? "1" : "0";
+      const normalized = toHalfWidthNumberText(raw);
+      const match = normalized.match(/-?\d+(?:\.\d+)?/);
+      if (!match) return delta > 0 ? `${raw} 1` : raw;
+      const current = Number(match[0]);
+      const next = Math.max(0, current + delta);
+      const adjusted = formatAdjustedNumber(next);
+      return raw.slice(0, match.index) + adjusted + raw.slice(match.index + match[0].length);
+    }
+
     function addIngredientRow(name = "", qty = "", assignee = "") {
       const box = document.getElementById("ingredientRows");
       const selectedAssignee = assignee || (name ? ruleForIngredient(name) : "");
@@ -2061,13 +2305,25 @@
       row.className = "ingredient-row";
       row.innerHTML = `
         <input type="text" class="ingredient-name" placeholder="材料名" value="${escapeHtml(name)}" autocomplete="off" />
-        <input type="text" class="ingredient-qty" placeholder="数量" value="${escapeHtml(qty)}" autocomplete="off" />
-        <button class="icon-btn" type="button" aria-label="材料行を削除">×</button>
+        <div class="qty-stepper" aria-label="数量調整">
+          <button class="qty-stepper-btn qty-minus" type="button" aria-label="数量を減らす">−</button>
+          <input type="text" class="ingredient-qty" placeholder="数量" value="${escapeHtml(qty)}" autocomplete="off" inputmode="decimal" />
+          <button class="qty-stepper-btn qty-plus" type="button" aria-label="数量を増やす">＋</button>
+        </div>
+        <button class="icon-btn remove-ingredient-btn" type="button" aria-label="材料行を削除">×</button>
         <select class="ingredient-assignee" aria-label="発注会社">
           ${assigneeOptions(selected)}
         </select>
       `;
-      row.querySelector("button").addEventListener("click", () => {
+      row.querySelector(".qty-minus").addEventListener("click", () => {
+        const input = row.querySelector(".ingredient-qty");
+        input.value = adjustQuantityText(input.value, -1);
+      });
+      row.querySelector(".qty-plus").addEventListener("click", () => {
+        const input = row.querySelector(".ingredient-qty");
+        input.value = adjustQuantityText(input.value, 1);
+      });
+      row.querySelector(".remove-ingredient-btn").addEventListener("click", () => {
         if (box.children.length > 1) row.remove();
         else {
           row.querySelector(".ingredient-name").value = "";
@@ -2143,10 +2399,11 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function deleteMenu(id) {
+    async function deleteMenu(id) {
       const target = state.menus.find(item => item.id === id);
       if (!target) return;
-      if (!confirm(`「${target.name}」を削除しますか？`)) return;
+      const ok = await askConfirm("本当に削除しますか？", `「${target.name}」をメニュー一覧から削除します。`);
+      if (!ok) return;
       state.menus = state.menus.filter(item => item.id !== id);
       removeMenuFromSelections(id);
       save(STORAGE_KEYS.menus, state.menus);
@@ -2154,22 +2411,74 @@
       toast("メニューを削除しました");
     }
 
+    function renderMenuSelectionControls() {
+      const selectBtn = document.getElementById("selectMenuModeBtn");
+      const deleteBtn = document.getElementById("bulkDeleteMenusBtn");
+      const cancelBtn = document.getElementById("cancelMenuSelectBtn");
+      if (!selectBtn || !deleteBtn || !cancelBtn) return;
+      const selecting = state.menuSelectionMode;
+      selectBtn.hidden = selecting;
+      deleteBtn.hidden = !selecting;
+      cancelBtn.hidden = !selecting;
+      deleteBtn.disabled = !state.selectedManageMenus.length;
+      deleteBtn.textContent = state.selectedManageMenus.length ? `削除 ${state.selectedManageMenus.length}` : "削除";
+    }
+
+    function startMenuSelectionMode() {
+      state.menuSelectionMode = true;
+      state.selectedManageMenus = [];
+      state.manageSections.menus = true;
+      renderManage();
+    }
+
+    function cancelMenuSelectionMode() {
+      state.menuSelectionMode = false;
+      state.selectedManageMenus = [];
+      renderManage();
+    }
+
+    async function deleteSelectedMenus() {
+      if (!state.selectedManageMenus.length) {
+        toast("削除するメニューを選択してください");
+        return;
+      }
+      const targets = state.menus.filter(item => state.selectedManageMenus.includes(item.id));
+      const ok = await askConfirm("選択したメニューを削除しますか？", `${targets.length}件のメニューをメニュー一覧から削除します。`);
+      if (!ok) return;
+      const targetIds = new Set(targets.map(item => item.id));
+      state.menus = state.menus.filter(item => !targetIds.has(item.id));
+      targets.forEach(item => removeMenuFromSelections(item.id));
+      state.menuSelectionMode = false;
+      state.selectedManageMenus = [];
+      save(STORAGE_KEYS.menus, state.menus);
+      render();
+      toast("選択したメニューを削除しました");
+    }
+
     function renderMenuList() {
       const box = document.getElementById("menuList");
+      state.selectedManageMenus = state.selectedManageMenus.filter(id => state.menus.some(item => item.id === id));
       if (!state.menus.length) {
         box.innerHTML = `<div class="panel empty">メニューがありません</div>`;
+        renderMenuSelectionControls();
         return;
       }
       box.innerHTML = state.menus.map(item => `
-        <article class="menu-card">
+        <article class="menu-card ${state.selectedManageMenus.includes(item.id) ? "selected" : ""}">
           <div class="menu-card-head">
-            <div class="menu-name">${escapeHtml(item.name)}</div>
+            <div class="menu-card-main">
+              ${state.menuSelectionMode ? `<input class="menu-select-check" type="checkbox" data-select-menu="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.name)}を選択" ${state.selectedManageMenus.includes(item.id) ? "checked" : ""} />` : ""}
+              <div class="menu-name">${escapeHtml(item.name)}</div>
+            </div>
             <div class="card-actions">
-              <button class="tiny-btn" type="button" data-edit-menu="${item.id}">編集</button>
-              <button class="tiny-btn" type="button" data-delete-menu="${item.id}">削除</button>
+              <button class="menu-toggle" type="button" data-toggle-menu="${escapeHtml(item.id)}" aria-expanded="false" aria-label="${escapeHtml(item.name)}の材料を表示">⌄</button>
+              ${state.menuSelectionMode ? "" : `
+                <button class="tiny-btn" type="button" data-edit-menu="${item.id}">編集</button>
+                <button class="tiny-btn" type="button" data-delete-menu="${item.id}">削除</button>
+              `}
             </div>
           </div>
-          <div class="chips">
+          <div class="chips" aria-hidden="true">
             ${item.ingredients.map(ing => {
               const assignee = ruleForIngredient(ing.name);
               const assigneeLabel = assigneeById(assignee).label;
@@ -2178,8 +2487,26 @@
           </div>
         </article>
       `).join("");
+      box.querySelectorAll("[data-toggle-menu]").forEach(btn => btn.addEventListener("click", () => {
+        const card = btn.closest(".menu-card");
+        const details = card.querySelector(".chips");
+        const expanded = card.classList.toggle("expanded");
+        btn.setAttribute("aria-expanded", String(expanded));
+        btn.setAttribute("aria-label", `${expanded ? "非表示" : "表示"}: ${card.querySelector(".menu-name").textContent}の材料`);
+        details.setAttribute("aria-hidden", String(!expanded));
+      }));
+      box.querySelectorAll("[data-select-menu]").forEach(input => input.addEventListener("change", () => {
+        if (input.checked && !state.selectedManageMenus.includes(input.dataset.selectMenu)) {
+          state.selectedManageMenus.push(input.dataset.selectMenu);
+        }
+        if (!input.checked) {
+          state.selectedManageMenus = state.selectedManageMenus.filter(id => id !== input.dataset.selectMenu);
+        }
+        renderMenuList();
+      }));
       box.querySelectorAll("[data-edit-menu]").forEach(btn => btn.addEventListener("click", () => editMenu(btn.dataset.editMenu)));
       box.querySelectorAll("[data-delete-menu]").forEach(btn => btn.addEventListener("click", () => deleteMenu(btn.dataset.deleteMenu)));
+      renderMenuSelectionControls();
     }
 
     function clearCompanyForm() {
@@ -2676,6 +3003,40 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
+    function askConfirm(title, body) {
+      const modal = document.getElementById("confirmModal");
+      const titleEl = document.getElementById("confirmTitle");
+      const bodyEl = document.getElementById("confirmBody");
+      const okBtn = document.getElementById("confirmOkBtn");
+      const cancelBtn = document.getElementById("confirmCancelBtn");
+      titleEl.textContent = title;
+      bodyEl.textContent = body;
+      modal.hidden = false;
+      okBtn.focus();
+      return new Promise(resolve => {
+        const close = value => {
+          modal.hidden = true;
+          okBtn.removeEventListener("click", onOk);
+          cancelBtn.removeEventListener("click", onCancel);
+          modal.removeEventListener("click", onBackdrop);
+          document.removeEventListener("keydown", onKeydown);
+          resolve(value);
+        };
+        const onOk = () => close(true);
+        const onCancel = () => close(false);
+        const onBackdrop = event => {
+          if (event.target === modal) close(false);
+        };
+        const onKeydown = event => {
+          if (event.key === "Escape") close(false);
+        };
+        okBtn.addEventListener("click", onOk);
+        cancelBtn.addEventListener("click", onCancel);
+        modal.addEventListener("click", onBackdrop);
+        document.addEventListener("keydown", onKeydown);
+      });
+    }
+
     function goInitialOrderScreen() {
       state.selectedDay = null;
       state.selectedDate = localDateIso(new Date());
@@ -2738,6 +3099,11 @@
     document.getElementById("saveCompanyBtn").addEventListener("click", saveCompanyFromForm);
     document.getElementById("clearCompanyBtn").addEventListener("click", clearCompanyForm);
     document.getElementById("newCompanyBtn").addEventListener("click", clearCompanyForm);
+    document.getElementById("toggleMenuListBtn").addEventListener("click", () => toggleManageSection("menus"));
+    document.getElementById("toggleCompanyListBtn").addEventListener("click", () => toggleManageSection("companies"));
+    document.getElementById("selectMenuModeBtn").addEventListener("click", startMenuSelectionMode);
+    document.getElementById("bulkDeleteMenusBtn").addEventListener("click", deleteSelectedMenus);
+    document.getElementById("cancelMenuSelectBtn").addEventListener("click", cancelMenuSelectionMode);
     document.getElementById("copyShareDataBtn").addEventListener("click", () => {
       copyText(sharedDataText())
         .then(() => toast("共有データをコピーしました"))
@@ -2759,29 +3125,6 @@
     document.getElementById("toOrder").addEventListener("click", () => switchScreen("order"));
     document.getElementById("toAgent").addEventListener("click", () => switchScreen("agent"));
     document.getElementById("toManage").addEventListener("click", () => switchScreen("manage"));
-    document.getElementById("resetMasterBtn").addEventListener("click", () => {
-      if (!confirm("メニューと発注会社を初期データに戻しますか？")) return;
-      state.menus = structuredClone(DEFAULT_MENUS);
-      state.rules = structuredClone(DEFAULT_RULES);
-      state.checks = {};
-      state.openGroups = {};
-      state.selectedMenus = {};
-      state.menuMultipliers = {};
-      state.orderSettings = {};
-      state.companies = [];
-      save(STORAGE_KEYS.menus, state.menus);
-      save(STORAGE_KEYS.rules, state.rules);
-      save(STORAGE_KEYS.checks, state.checks);
-      save(STORAGE_KEYS.openGroups, state.openGroups);
-      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
-      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
-      save(STORAGE_KEYS.orderSettings, state.orderSettings);
-      save(STORAGE_KEYS.companies, state.companies);
-      clearMenuForm();
-      clearCompanyForm();
-      render();
-      toast("初期データに戻しました");
-    });
 
     const importedSharedData = applySharedDataFromUrl();
     migrateStoredData();

@@ -1,0 +1,3185 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="きばり屋" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+  <title>きばり屋</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --ink: #202124;
+      --muted: #697386;
+      --line: #dfe4ea;
+      --brand: #b53632;
+      --brand-dark: #87201e;
+      --green: #2e7d59;
+      --amber: #c77818;
+      --blue: #2b6cb0;
+      --shadow: 0 10px 26px rgba(23, 30, 44, .08);
+      --radius: 8px;
+      --nav-h: 72px;
+      --home-shell-max: 480px;
+      --home-bg: #0b0705;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+      background: var(--home-bg);
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+      background: var(--home-bg);
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: rgba(255, 255, 255, .18);
+    }
+
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      max-width: 520px;
+      margin: 0 auto;
+      background: var(--bg);
+      position: relative;
+      padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 18px);
+      overscroll-behavior-y: contain;
+    }
+
+    .app.home-mode {
+      max-width: var(--home-shell-max);
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 0;
+      box-shadow: 0 0 36px rgba(0,0,0,.18);
+    }
+
+    .app.visual-bg-mode {
+      isolation: isolate;
+      background: #000;
+    }
+
+    .app.visual-bg-mode::before,
+    .app.visual-bg-mode::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      right: max(0px, calc((100% - var(--home-shell-max)) / 2));
+      bottom: 0;
+      left: max(0px, calc((100% - var(--home-shell-max)) / 2));
+      pointer-events: none;
+    }
+
+    .app.visual-bg-mode::before {
+      z-index: 0;
+      background: url("./assets/background.png") center / cover no-repeat;
+    }
+
+    .app.visual-bg-mode::after {
+      z-index: 0;
+      background:
+        radial-gradient(circle at center, rgba(0,0,0,.18) 0%, rgba(0,0,0,.46) 58%, rgba(0,0,0,.8) 100%),
+        rgba(0,0,0,.5);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #000;
+      color: #fff;
+      padding: calc(16px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) 14px calc(18px + env(safe-area-inset-left));
+      border-bottom: 0;
+      box-shadow: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .topbar:active {
+      background: #111;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: min(100%, 1060px);
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      width: clamp(68px, 18vw, 88px);
+      height: clamp(68px, 18vw, 88px);
+      background: #000;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.08);
+      display: block;
+    }
+
+    .home-screen {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      padding: clamp(12px, 2.5vh, 24px) 0 calc(clamp(12px, 2.5vh, 24px) + env(safe-area-inset-bottom));
+      min-height: 0;
+    }
+
+    .home-card-grid {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(10px, 2vh, 20px);
+    }
+
+    .home-card {
+      position: relative;
+      flex: 1 1 0;
+      width: min(calc(100% - 32px), 440px);
+      min-width: 0;
+      min-height: 120px;
+      max-height: 280px;
+      border: 0;
+      background: #111;
+      border-radius: 4px;
+      box-shadow: 0 26px 70px rgba(0,0,0,.38), 0 8px 18px rgba(0,0,0,.24);
+      display: block;
+      overflow: hidden;
+    }
+
+    .home-card-button {
+      padding: 0;
+      transition: transform .28s ease, box-shadow .28s ease, filter .28s ease;
+    }
+
+    .home-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    .home-card:first-child img {
+      object-position: center center;
+    }
+
+    .order-card img {
+      object-position: center 46%;
+    }
+
+    .food-card img {
+      object-position: center center;
+    }
+
+    .home-card-button:focus-visible {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 34px 86px rgba(0,0,0,.48), 0 12px 24px rgba(0,0,0,.32);
+      outline: 0;
+    }
+
+    .labeled-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 48%;
+      background: linear-gradient(0deg, rgba(0,0,0,.76) 0%, rgba(0,0,0,.34) 54%, transparent 100%);
+      opacity: .92;
+      pointer-events: none;
+    }
+
+    .home-card-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: clamp(22px, 5vw, 44px);
+      z-index: 1;
+      color: #fff;
+      font-family: "Zen Kaku Gothic New", -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      font-size: clamp(16px, 4.5vw, 22px);
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-align: center;
+      text-shadow: 0 3px 14px rgba(0,0,0,.75);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1);
+      pointer-events: none;
+    }
+
+    .labeled-card:focus-visible .home-card-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .home-card-button:active {
+      transform: scale(.985);
+      box-shadow: 0 18px 48px rgba(0,0,0,.4);
+    }
+
+    .screen {
+      display: none;
+      padding: 14px 12px 22px;
+    }
+
+    .screen.active { display: block; }
+
+    .visual-bg-mode main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .home-mode main {
+      display: flex;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .home-mode .home-screen.active {
+      display: flex;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 3px 0 12px;
+      scrollbar-width: none;
+    }
+
+    .day-tabs::-webkit-scrollbar { display: none; }
+
+    .day-btn {
+      min-width: 48px;
+      height: 44px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(22,28,36,.05);
+    }
+
+    .day-btn.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .progress-panel {
+      padding: 14px;
+    }
+
+    .selector-panel {
+      padding: 9px;
+    }
+
+    .selector-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .selector-title {
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .selector-sub {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+
+    .menu-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .menu-option {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      gap: 7px;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .menu-option.selected,
+    .menu-option:has(input:checked) {
+      border-color: rgba(46,125,89,.42);
+      background: #f0faf5;
+    }
+
+    .menu-option input {
+      width: 20px;
+      height: 20px;
+      min-height: auto;
+      padding: 0;
+      accent-color: var(--green);
+    }
+
+    .menu-option-text {
+      min-width: 0;
+    }
+
+    .menu-option-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .serving-note {
+      display: inline-block;
+      margin-left: 4px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .menu-option-detail {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-top: 1px;
+      overflow-wrap: anywhere;
+    }
+
+    .menu-stepper {
+      display: inline-grid;
+      grid-template-columns: 30px 28px 30px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .stepper-btn {
+      width: 30px;
+      height: 30px;
+      background: #f3f6f9;
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stepper-count {
+      min-width: 28px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .menu-stepper.disabled {
+      opacity: .42;
+    }
+
+    .order-settings {
+      padding: 12px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .progress-title {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .progress-num {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .order-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .complete-actions {
+      display: flex;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .complete-actions .primary-btn {
+      width: 100%;
+      min-height: 48px;
+      font-size: 15px;
+    }
+
+    .status-msg {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 13px;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      line-height: 1.45;
+    }
+
+    .reset-btn, .ghost-btn, .danger-btn, .primary-btn, .tiny-btn {
+      border-radius: 8px;
+      min-height: 40px;
+      padding: 0 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+
+    .reset-btn, .ghost-btn {
+      background: #fff;
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .primary-btn {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .danger-btn {
+      background: #fff4f4;
+      color: var(--brand-dark);
+      border-color: #f0c7c5;
+    }
+
+    .tiny-btn {
+      min-height: 34px;
+      padding: 0 10px;
+      font-size: 13px;
+      background: var(--surface-2);
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fff5df;
+      border: 1px solid #f3d69b;
+      color: #68430c;
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .notice {
+      background: #edf6ff;
+      border: 1px solid #bfdbfe;
+      color: #194b7c;
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .accordion {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 16px rgba(23,30,44,.06);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .acc-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 14px 12px;
+      text-align: left;
+    }
+
+    .acc-main {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .group-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: #f1f3f5;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .group-icon.buy { background: #e7f5ee; color: var(--green); }
+    .group-icon.manager { background: #fff1e6; color: #9a4d0a; }
+    .group-icon.vendor { background: #eef4ff; color: var(--blue); }
+    .group-icon.phone { background: #f5ecff; color: #6f42c1; }
+    .group-icon.unknown { background: #fff4f4; color: var(--brand-dark); }
+
+    .acc-title {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .acc-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+
+    .acc-body {
+      border-top: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+
+    .script {
+      margin: 12px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: #333;
+      line-height: 1.65;
+      font-weight: 700;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px;
+      border-top: 1px solid #edf0f4;
+      align-items: start;
+    }
+
+    .item-row:first-child { border-top: 0; }
+
+    .item-row.display-only {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .check {
+      width: 24px;
+      height: 24px;
+      margin: 1px 0 0;
+      accent-color: var(--green);
+    }
+
+    .item-name {
+      font-weight: 900;
+      font-size: 15px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .item-detail {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: #eef0f3;
+      color: #3d4654;
+      font-size: 12px;
+      font-weight: 800;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .badge.two { background: #fff1d6; color: #7a4700; }
+    .badge.done { background: #e7f5ee; color: var(--green); }
+
+    .empty {
+      padding: 18px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 16px 2px 9px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .section-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+
+    .section-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .section-toggle.open {
+      transform: rotate(180deg);
+      background: #edf2f7;
+    }
+
+    .collapsible-section[hidden] {
+      display: none !important;
+    }
+
+    .visual-bg-mode .section-title h2 {
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,.7);
+    }
+
+    .form {
+      padding: 12px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(181,54,50,.12);
+    }
+
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 38px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .ingredient-row select {
+      grid-column: 1 / -1;
+      min-height: 40px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .qty-stepper {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) 38px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .qty-stepper input {
+      min-height: 42px;
+      border: 0;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      text-align: center;
+      padding: 8px 6px;
+      font-weight: 800;
+    }
+
+    .qty-stepper input:focus {
+      box-shadow: none;
+    }
+
+    .qty-stepper-btn {
+      min-width: 38px;
+      min-height: 42px;
+      border: 0;
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .qty-stepper-btn:active {
+      background: #edf2f7;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #fff4f4;
+      color: var(--brand-dark);
+      border: 1px solid #f0c7c5;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .share-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .share-help {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
+      margin: 8px 0 0;
+    }
+
+    .menu-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 5px 14px rgba(23,30,44,.05);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .menu-card.selected {
+      border-color: rgba(47, 142, 94, .55);
+      box-shadow: 0 0 0 3px rgba(47, 142, 94, .12), 0 5px 14px rgba(23,30,44,.05);
+    }
+
+    .menu-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .menu-card-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .menu-select-check {
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+      flex: 0 0 auto;
+      accent-color: var(--green);
+    }
+
+    .menu-name {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+      align-items: center;
+    }
+
+    .tiny-btn.danger-btn {
+      color: #fff;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .tiny-btn.danger-btn:disabled {
+      opacity: .45;
+    }
+
+    .menu-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .menu-card.expanded .menu-toggle {
+      transform: rotate(180deg);
+      background: #edf2f7;
+    }
+
+    .chips {
+      display: none;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .menu-card.expanded .chips {
+      display: flex;
+    }
+
+    .rule-list {
+      padding: 0 12px 12px;
+    }
+
+    .rule-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 10px 0;
+      border-top: 1px solid #edf0f4;
+      align-items: center;
+    }
+
+    .rule-name {
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .rule-assignee {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      font-weight: 800;
+    }
+
+    .agent-panel {
+      padding: 12px;
+    }
+
+    .agent-lead {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .agent-question {
+      min-height: 46px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .agent-question:active {
+      background: #f3f6f9;
+    }
+
+    .agent-answer {
+      padding: 14px;
+      border-left: 5px solid var(--green);
+    }
+
+    .agent-answer-title {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    .agent-answer-body {
+      color: #30343b;
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.7;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      z-index: 30;
+      width: min(var(--home-shell-max), 100%);
+      height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.96);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .home-mode .bottom-nav {
+      display: none;
+    }
+
+    .nav-btn {
+      border-radius: 8px;
+      background: #f1f3f5;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
+      font-weight: 900;
+      min-width: 0;
+    }
+
+    .nav-btn.active {
+      background: #17191d;
+      color: #fff;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .nav-text {
+      font-size: 12px;
+      line-height: 1.1;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);
+      transform: translateX(-50%) translateY(8px);
+      width: min(460px, calc(100% - 24px));
+      background: #17191d;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 40;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .confirm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0,0,0,.48);
+    }
+
+    .confirm-modal[hidden] {
+      display: none;
+    }
+
+    .confirm-card {
+      width: min(360px, 100%);
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      box-shadow: 0 22px 60px rgba(0,0,0,.28);
+      padding: 16px;
+    }
+
+    .confirm-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .confirm-body {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 12px calc(14px + env(safe-area-inset-left));
+      }
+
+      .topbar-row {
+        justify-content: flex-start;
+      }
+
+      .header-logo {
+        width: clamp(64px, 19vw, 78px);
+        height: clamp(64px, 19vw, 78px);
+      }
+
+      .home-card-grid {
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 481px) {
+      body {
+        background: #eceff3;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .home-card-button:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 34px 86px rgba(0,0,0,.48), 0 12px 24px rgba(0,0,0,.32);
+      }
+
+      .labeled-card:hover .home-card-label {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (hover: none) {
+      .home-card-label {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .home-card-button,
+      .home-card-label,
+      .toast {
+        transition: none;
+      }
+
+      .home-card-button:hover,
+      .home-card-button:focus-visible {
+        transform: none;
+      }
+
+      .home-card-label {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (orientation: landscape) and (max-width: 1024px) {
+      .home-card-grid {
+        flex-direction: row;
+        gap: clamp(12px, 4vw, 22px);
+        padding: 0 calc(14px + env(safe-area-inset-right)) 0 calc(14px + env(safe-area-inset-left));
+      }
+
+      .home-card {
+        width: auto;
+        max-height: 280px;
+      }
+    }
+
+    @media (max-height: 640px) {
+      .home-card-grid {
+        gap: clamp(8px, 1.8vh, 14px);
+      }
+
+      .home-card {
+        min-height: 96px;
+        max-height: 220px;
+      }
+
+      .home-card-label {
+        bottom: clamp(12px, 3.5vw, 22px);
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 600px) {
+      .topbar {
+        padding: calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left));
+      }
+
+      .header-logo {
+        width: clamp(52px, 12vh, 68px);
+        height: clamp(52px, 12vh, 68px);
+      }
+
+      .home-screen {
+        padding-top: clamp(10px, 3vh, 18px);
+        padding-bottom: calc(clamp(10px, 3vh, 18px) + env(safe-area-inset-bottom));
+      }
+
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      .home-card-grid {
+        flex-direction: row;
+        justify-content: center;
+        align-items: stretch;
+        gap: clamp(8px, 2vw, 16px);
+      }
+
+      .home-card {
+        width: auto;
+        min-height: 88px;
+        max-height: none;
+      }
+    }
+
+    @media (min-width: 700px) {
+      body {
+        background: #eceff3;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app home-mode visual-bg-mode" id="appRoot">
+    <header class="topbar" id="appHomeHeader" role="button" tabindex="0" aria-label="最初の画面に戻る">
+      <div class="topbar-row">
+        <div class="header-logo" aria-hidden="true">
+          <img src="./apple-touch-icon.png" alt="" />
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="screen active home-screen" id="homeScreen">
+        <div class="home-card-grid">
+          <button class="home-card home-card-button labeled-card bird-card" type="button" aria-label="鳥発注">
+            <img src="./assets/button-left.png" alt="鳥発注" width="1314" height="724" />
+            <span class="home-card-label">鳥発注</span>
+          </button>
+          <button class="home-card home-card-button labeled-card order-card" id="openExistingFeatureCard" type="button" aria-label="発注確認リストを開く">
+            <img src="./assets/button-right.png" alt="発注確認リスト" width="1128" height="694" />
+            <span class="home-card-label">発注</span>
+          </button>
+          <button class="home-card home-card-button labeled-card food-card" type="button" aria-label="料理">
+            <img src="./assets/button-food.png" alt="料理" width="1048" height="706" />
+            <span class="home-card-label">料理</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="screen" id="orderScreen">
+        <div class="day-tabs" id="dayTabs" aria-label="曜日選択"></div>
+        <div id="orderAlerts"></div>
+        <div id="menuSelection"></div>
+        <div class="panel order-actions">
+          <div class="status-msg" id="statusMsg"></div>
+          <button class="reset-btn" id="resetChecksBtn" type="button">一括解除</button>
+        </div>
+        <div id="taskList"></div>
+        <div class="panel complete-actions">
+          <button class="primary-btn" id="completeOrderBtn" type="button">発注完了</button>
+        </div>
+      </section>
+
+      <section class="screen" id="manageScreen">
+        <div class="section-title">
+          <h2 id="formTitle">新規メニュー追加</h2>
+          <button class="tiny-btn" id="newMenuBtn" type="button">新規</button>
+        </div>
+        <div class="panel form">
+          <input type="hidden" id="menuId" />
+          <div class="field">
+            <label for="menuName">料理名・仕込み名</label>
+            <input id="menuName" type="text" placeholder="例：新メニューのチキン南蛮" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label>必要な材料と数量</label>
+            <div id="ingredientRows"></div>
+            <button class="ghost-btn" id="addIngredientBtn" type="button">材料行を追加</button>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" id="clearFormBtn" type="button">クリア</button>
+            <button class="primary-btn" id="saveMenuBtn" type="button">保存</button>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h2>メニュー一覧</h2>
+          <div class="section-actions">
+            <button class="section-toggle" id="toggleMenuListBtn" type="button" aria-expanded="false" aria-controls="menuListPanel" aria-label="メニュー一覧を表示">⌄</button>
+            <button class="tiny-btn" id="selectMenuModeBtn" type="button">選択</button>
+            <button class="tiny-btn danger-btn" id="bulkDeleteMenusBtn" type="button" hidden>削除</button>
+            <button class="tiny-btn" id="cancelMenuSelectBtn" type="button" hidden>解除</button>
+          </div>
+        </div>
+        <div class="collapsible-section" id="menuListPanel" hidden>
+          <div id="menuList"></div>
+        </div>
+
+        <div class="section-title">
+          <h2>共有</h2>
+        </div>
+        <div class="panel form">
+          <div class="share-actions">
+            <button class="primary-btn" id="copyShareDataBtn" type="button">共有データをコピー</button>
+          </div>
+          <p class="share-help">メニューや発注会社を共有したい時は、このデータをLINEなどで送ってください。受け取った側は下の欄へ貼り付けて取り込みます。</p>
+          <div class="field" style="margin-top: 12px;">
+            <label for="shareImportText">共有データを貼り付け</label>
+            <textarea id="shareImportText" placeholder="KIBARIYA1. から始まる共有データを貼り付け"></textarea>
+          </div>
+          <button class="ghost-btn" id="importShareDataBtn" type="button">貼り付けたデータを取り込む</button>
+        </div>
+
+        <div class="section-title">
+          <h2>発注会社管理</h2>
+          <button class="tiny-btn" id="newCompanyBtn" type="button">新規</button>
+        </div>
+        <div class="panel form">
+          <input type="hidden" id="companyId" />
+          <div class="field">
+            <label for="companyName">発注会社名</label>
+            <input id="companyName" type="text" placeholder="例：新しい業者名" autocomplete="off" />
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" id="clearCompanyBtn" type="button">クリア</button>
+            <button class="primary-btn" id="saveCompanyBtn" type="button">保存</button>
+          </div>
+        </div>
+        <div class="section-title">
+          <h2>登録済み発注会社</h2>
+          <button class="section-toggle" id="toggleCompanyListBtn" type="button" aria-expanded="false" aria-controls="companyListPanel" aria-label="登録済み発注会社を表示">⌄</button>
+        </div>
+        <div class="panel collapsible-section" id="companyListPanel" hidden>
+          <div class="rule-list" id="companyList"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="agentScreen">
+        <div class="section-title">
+          <h2>発注相談</h2>
+        </div>
+        <div class="panel agent-panel">
+          <p class="agent-lead">発注業務について質問してください。このアプリ内の曜日・メニュー・発注会社ルールをもとに回答します。</p>
+          <div class="field">
+            <label for="agentPromptInput">質問内容</label>
+            <textarea id="agentPromptInput" placeholder="例：明日すきやきコース16名なら？&#10;例：今白ネギが5足しかないけど発注必要？&#10;例：卵が0個なら何kg？"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" id="resetAgentBtn" type="button">リセット</button>
+            <button class="primary-btn" id="askAgentBtn" type="button">質問する</button>
+          </div>
+        </div>
+        <div class="panel agent-answer" id="agentAnswer">
+          <div class="agent-answer-title">質問を入力してください</div>
+          <div class="agent-answer-body"></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="画面切り替え">
+      <button class="nav-btn active" id="toOrder" type="button">
+        <span class="nav-icon">✓</span>
+        <span class="nav-text">発注</span>
+      </button>
+      <button class="nav-btn" id="toAgent" type="button">
+        <span class="nav-icon">?</span>
+        <span class="nav-text">相談</span>
+      </button>
+      <button class="nav-btn" id="toManage" type="button">
+        <span class="nav-icon">≡</span>
+        <span class="nav-text">メニュー管理</span>
+      </button>
+    </nav>
+  </div>
+  <div class="confirm-modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+    <div class="confirm-card">
+      <h2 class="confirm-title" id="confirmTitle">確認</h2>
+      <div class="confirm-body" id="confirmBody"></div>
+      <div class="confirm-actions">
+        <button class="secondary-btn" id="confirmCancelBtn" type="button">キャンセル</button>
+        <button class="primary-btn" id="confirmOkBtn" type="button">はい</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const APP_TITLE = "きばり屋";
+
+    const STORAGE_KEYS = {
+      menus: "kibariya.menus.v1",
+      rules: "kibariya.rules.v1",
+      checks: "kibariya.checks.v1",
+      openGroups: "kibariya.openGroups.v1",
+      selectedMenus: "kibariya.selectedMenus.v1",
+      menuMultipliers: "kibariya.menuMultipliers.v1",
+      orderSettings: "kibariya.orderSettings.v1",
+      companies: "kibariya.companies.v1",
+      activeScreen: "kibariya.activeScreen.v1",
+      silkenTofuMigrated: "kibariya.silkenTofuMigrated.v1"
+    };
+
+    const VALID_SCREENS = ["home", "order", "agent", "manage"];
+
+    const ASSIGNEES = [
+      { id: "buy", label: "当日の買い出し", order: 1, icon: "買", cls: "buy" },
+      { id: "manager", label: "りくさん（店長）に連絡", order: 2, icon: "連", cls: "manager" },
+      { id: "muraoka", label: "村岡", order: 3, icon: "村", cls: "vendor" },
+      { id: "nabata", label: "名畑", order: 4, icon: "名", cls: "vendor" },
+      { id: "nishihara", label: "西原商会", order: 5, icon: "西", cls: "vendor" },
+      { id: "rikaman", label: "リカマン", order: 6, icon: "リ", cls: "vendor" },
+      { id: "ogawa", label: "小川酒", order: 7, icon: "小", cls: "vendor" },
+      { id: "egg", label: "卵（びっぐえっぐ）", order: 8, icon: "☎", cls: "phone" },
+      { id: "unknown", label: "未分類確認", order: 99, icon: "?", cls: "unknown" }
+    ];
+
+    const ASSIGNEE_BY_ID = Object.fromEntries(ASSIGNEES.map(a => [a.id, a]));
+    const BASE_VENDOR_IDS = ["muraoka","nabata","nishihara","rikaman","ogawa","egg"];
+
+    const DEFAULT_RULES = [
+      ...["キャベツ","えのき","春菊","白菜","白ネギ","舞茸","サニーレタス","水菜","赤パプ","黄パプ","緑かいわれ","桜かいわれ","茗荷","細ネギ","長ネギ","きゅうり","長芋","絹豆腐"].map(material => ({ id: uid(), material, assignee: "muraoka" })),
+      ...["豆腐","クリームチーズ","豆乳","やくみみそ","上新粉","小麦粉"].map(material => ({ id: uid(), material, assignee: "nabata" })),
+      ...["うんぜんはむ","えび","ポテト"].map(material => ({ id: uid(), material, assignee: "nishihara" })),
+      ...["コーラ","ジンジャエール","レモンサワー","ビールの生樽"].map(material => ({ id: uid(), material, assignee: "rikaman" })),
+      ...["日本酒","果実酒","地酒"].map(material => ({ id: uid(), material, assignee: "ogawa" })),
+      { id: uid(), material: "卵", assignee: "egg" },
+      ...["しらたき","油揚げ","糸蒟蒻"].map(material => ({ id: uid(), material, assignee: "buy" })),
+      { id: uid(), material: "しいたけ", assignee: "muraoka" }
+    ];
+
+    const DEFAULT_MENUS = [
+      menu("水炊き", [["キャベツ","1/4玉"],["えのき","1/2袋"],["春菊","1"],["絹豆腐","1丁"],["舞茸","1"],["しらたき","1個"],["油揚げ","1枚"]]),
+      menu("すき焼き", [["白菜",""],["白ネギ",""],["舞茸",""],["春菊",""],["糸蒟蒻",""],["絹豆腐",""]]),
+      menu("リーフ（サラダ）", [["サニーレタス","1"],["水菜","1"],["赤パプ","1"],["黄パプ","1"]]),
+      menu("やくみ（薬味）", [["緑かいわれ","3"],["桜かいわれ","2"],["茗荷","3"]]),
+      menu("ねぎま", [["白ネギ","1足で7本"],["長ネギ","10足合わせ"]]),
+      menu("きゅうり山葵", [["きゅうり","10本"]]),
+      menu("チーズ豆腐", [["クリームチーズ","400g"],["豆乳","400g"],["豆腐","400g"]]),
+      menu("長芋だし醤油", [["長芋","1"]]),
+      menu("その他単品", [["ポテト","2"]]),
+      menu("ハムカツ", [["うんぜんはむ","2"]]),
+      menu("春巻き", [["えび","1kg"],["しいたけ","6個入りを5"],["やくみみそ","1"]]),
+      menu("ネギカット", [["細ネギ","4"]]),
+      menu("手羽唐", [["上新粉","在庫確認"],["小麦粉","在庫確認"]])
+    ];
+
+    const DAYS = [
+      { label: "日", full: "日曜日", vendors: ["rikaman","muraoka","nabata","nishihara","egg"], twoDay: ["rikaman"] },
+      { label: "月", full: "月曜日", vendors: ["muraoka","nabata","nishihara","egg"], twoDay: ["muraoka"] },
+      { label: "火", full: "火曜日", vendors: ["nabata","nishihara","rikaman","ogawa"], twoDay: [] },
+      { label: "水", full: "水曜日", vendors: ["muraoka","nabata","rikaman","nishihara","egg"], twoDay: [] },
+      { label: "木", full: "木曜日", vendors: ["muraoka","nabata","nishihara","rikaman","egg"], twoDay: [] },
+      { label: "金", full: "金曜日", vendors: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"], twoDay: ["muraoka","nabata","nishihara","rikaman","ogawa","egg"] },
+      { label: "土", full: "土曜日", vendors: [], twoDay: [] }
+    ];
+
+    const NAME_ALIASES = {
+      "水炊き": ["水たき", "みずたき", "ミズタキ"],
+      "すき焼き": ["すきやき", "スキヤキ", "すき焼", "すき焼きコース"],
+      "白ネギ": ["白ねぎ", "白葱", "しろねぎ", "しろネギ"],
+      "長ネギ": ["長ねぎ", "長葱", "ながねぎ", "ながネギ"],
+      "細ネギ": ["細ねぎ", "細葱", "ほそねぎ", "ほそネギ"],
+      "きゅうり": ["胡瓜", "キュウリ"],
+      "しいたけ": ["椎茸", "シイタケ"],
+      "豆腐": ["とうふ", "トウフ"],
+      "絹豆腐": ["絹とうふ", "絹ごし豆腐", "絹ごしとうふ", "きぬどうふ", "きぬとうふ"],
+      "卵": ["玉子", "たまご", "タマゴ"],
+      "糸蒟蒻": ["糸こんにゃく", "糸こん", "イトコン"],
+      "しらたき": ["白滝", "シラタキ"],
+      "えのき": ["榎茸", "えのき茸", "エノキ"],
+      "舞茸": ["まいたけ", "マイタケ"],
+      "春菊": ["しゅんぎく", "シュンギク"],
+      "白菜": ["はくさい", "ハクサイ"],
+      "長芋": ["ながいも", "ナガイモ"],
+      "茗荷": ["みょうが", "ミョウガ"],
+      "赤パプ": ["赤パプリカ", "赤ぱぷ"],
+      "黄パプ": ["黄パプリカ", "黄ぱぷ"],
+      "緑かいわれ": ["緑カイワレ", "みどりかいわれ"],
+      "桜かいわれ": ["桜カイワレ", "さくらかいわれ"],
+      "上新粉": ["じょうしんこ", "ジョウシンコ"],
+      "小麦粉": ["こむぎこ", "コムギコ"],
+      "うんぜんはむ": ["雲仙ハム", "うんぜんハム"],
+      "えび": ["海老", "エビ"],
+      "ポテト": ["ぽてと"]
+    };
+
+    const state = {
+      activeScreen: savedActiveScreen(),
+      selectedDate: localDateIso(new Date()),
+      selectedDay: null,
+      menus: readJson(STORAGE_KEYS.menus, DEFAULT_MENUS),
+      rules: readJson(STORAGE_KEYS.rules, DEFAULT_RULES),
+      checks: readJson(STORAGE_KEYS.checks, {}),
+      openGroups: readJson(STORAGE_KEYS.openGroups, {}),
+      selectedMenus: readJson(STORAGE_KEYS.selectedMenus, {}),
+      menuMultipliers: readJson(STORAGE_KEYS.menuMultipliers, {}),
+      orderSettings: readJson(STORAGE_KEYS.orderSettings, {}),
+      companies: readJson(STORAGE_KEYS.companies, []),
+      manageSections: {
+        menus: false,
+        companies: false
+      },
+      menuSelectionMode: false,
+      selectedManageMenus: []
+    };
+
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function menu(name, pairs) {
+      return {
+        id: uid(),
+        name,
+        ingredients: pairs.map(([name, qty]) => ({ id: uid(), name, qty }))
+      };
+    }
+
+    function readJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : structuredClone(fallback);
+      } catch (error) {
+        return structuredClone(fallback);
+      }
+    }
+
+    function savedActiveScreen() {
+      const screen = localStorage.getItem(STORAGE_KEYS.activeScreen);
+      return VALID_SCREENS.includes(screen) ? screen : "home";
+    }
+
+    function save(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function allAssignees() {
+      const custom = state.companies.map((company, index) => ({
+        id: company.id,
+        label: company.label,
+        order: 20 + index,
+        icon: (company.label || "発").trim().slice(0, 1),
+        cls: "vendor",
+        custom: true
+      }));
+      return [...ASSIGNEES, ...custom];
+    }
+
+    function assigneeById(id) {
+      return allAssignees().find(item => item.id === id) || ASSIGNEE_BY_ID.unknown;
+    }
+
+    function customVendorIds() {
+      return state.companies.map(company => company.id);
+    }
+
+    function localDateIso(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function dateFromIso(iso) {
+      const [year, month, day] = String(iso).split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function weekdayFromIso(iso) {
+      return dateFromIso(iso).getDay();
+    }
+
+    function setSelectedDate(iso) {
+      if (!iso) return;
+      state.selectedDate = iso;
+      state.selectedDay = weekdayFromIso(iso);
+    }
+
+    function dateForWeekday(targetDay) {
+      const base = dateFromIso(state.selectedDate);
+      const diff = targetDay - base.getDay();
+      base.setDate(base.getDate() + diff);
+      return localDateIso(base);
+    }
+
+    function normalize(text) {
+      return String(text || "")
+        .normalize("NFKC")
+        .trim()
+        .replace(/\s+/g, "")
+        .toLowerCase();
+    }
+
+    function nameCandidates(name) {
+      return [name, ...(NAME_ALIASES[name] || [])].filter(Boolean);
+    }
+
+    function textIncludesName(text, name) {
+      const t = normalize(text);
+      return nameCandidates(name).some(candidate => t.includes(normalize(candidate)));
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function ruleForIngredient(name) {
+      const n = normalize(name);
+      const exact = state.rules.find(rule => normalize(rule.material) === n);
+      if (exact) return exact.assignee;
+      const partial = [...state.rules]
+        .filter(rule => normalize(rule.material))
+        .sort((a, b) => normalize(b.material).length - normalize(a.material).length)
+        .find(rule => n.includes(normalize(rule.material)));
+      return partial ? partial.assignee : "unknown";
+    }
+
+    function checkKey(date, itemId) {
+      return `date:${date}|${itemId}`;
+    }
+
+    function isChecked(date, itemId) {
+      return Boolean(state.checks[checkKey(date, itemId)]);
+    }
+
+    function setChecked(date, itemId, checked) {
+      const key = checkKey(date, itemId);
+      if (checked) state.checks[key] = true;
+      else delete state.checks[key];
+      save(STORAGE_KEYS.checks, state.checks);
+    }
+
+    function selectedMenuIds(date = state.selectedDate) {
+      const validIds = new Set(state.menus.map(item => item.id));
+      return (state.selectedMenus[date] || []).filter(id => validIds.has(id));
+    }
+
+    function saveSelectedMenuIds(date, ids) {
+      state.selectedMenus[date] = [...new Set(ids)].filter(id => state.menus.some(item => item.id === id));
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+    }
+
+    function toggleMenuSelection(menuId, checked) {
+      const current = selectedMenuIds();
+      const next = checked ? [...current, menuId] : current.filter(id => id !== menuId);
+      saveSelectedMenuIds(state.selectedDate, next);
+    }
+
+    function removeMenuFromSelections(menuId) {
+      Object.keys(state.selectedMenus).forEach(day => {
+        state.selectedMenus[day] = (state.selectedMenus[day] || []).filter(id => id !== menuId);
+      });
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+    }
+
+    function orderSettings(date = state.selectedDate) {
+      const current = state.orderSettings[date] || {};
+      return {
+        waterCourseGuests: Number(current.waterCourseGuests || 0),
+        leafWholeStock: current.leafWholeStock ?? "",
+        eggStock: current.eggStock || ""
+      };
+    }
+
+    function saveOrderSettings(date, next) {
+      state.orderSettings[date] = { ...orderSettings(date), ...next };
+      save(STORAGE_KEYS.orderSettings, state.orderSettings);
+    }
+
+    function menuByName(name) {
+      return state.menus.find(menuItem => normalize(menuItem.name).includes(normalize(name)));
+    }
+
+    function multiplierMap(date = state.selectedDate) {
+      if (!state.menuMultipliers[date]) state.menuMultipliers[date] = {};
+      return state.menuMultipliers[date];
+    }
+
+    function menuMultiplier(menuId, date = state.selectedDate) {
+      return Math.max(1, Number(multiplierMap(date)[menuId] || 1));
+    }
+
+    function saveMenuMultiplier(menuId, value, date = state.selectedDate) {
+      multiplierMap(date)[menuId] = Math.max(1, Number(value || 1));
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+    }
+
+    function effectiveSelectedMenuIds(date = state.selectedDate) {
+      return selectedMenuIds(date);
+    }
+
+    function effectiveMenuMultiplier(menuItem) {
+      return menuMultiplier(menuItem.id);
+    }
+
+    function formatScaledNumber(value) {
+      return Number.isInteger(value) ? String(value) : String(Math.round(value * 100) / 100);
+    }
+
+    function scaleQuantity(qty, multiplier) {
+      if (!qty || multiplier === 1) return qty;
+      const text = String(qty);
+      const fraction = text.match(/^(\d+)\/(\d+)(.*)$/);
+      if (fraction) {
+        const value = (Number(fraction[1]) / Number(fraction[2])) * multiplier;
+        return `${formatScaledNumber(value)}${fraction[3]}`;
+      }
+      const onePack = text.match(/^(.+?を)(\d+(?:\.\d+)?)(.*)$/);
+      if (onePack) return `${onePack[1]}${formatScaledNumber(Number(onePack[2]) * multiplier)}${onePack[3]}`;
+      return text.replace(/(\d+(?:\.\d+)?)/g, (match, number) => formatScaledNumber(Number(number) * multiplier));
+    }
+
+    function shouldMoveToBuyWhenVendorUnavailable(assignee, ingredient, menuItem, day) {
+      if (!BASE_VENDOR_IDS.includes(assignee) || day.vendors.includes(assignee)) return false;
+
+      const materialName = normalize(ingredient.name);
+      const menuName = normalize(menuItem.name);
+      if (assignee === "muraoka") return true;
+      if (assignee !== "nabata") return false;
+
+      const waterTofu = materialName === normalize("豆腐") && menuName.includes(normalize("水炊き"));
+      const flourCheck = ["上新粉", "小麦粉"].some(name => materialName === normalize(name));
+      return waterTofu || flourCheck;
+    }
+
+    function visibleGroups() {
+      const day = DAYS[state.selectedDay];
+      const groups = new Map();
+      const selected = new Set(effectiveSelectedMenuIds());
+
+      function ensureGroup(assignee) {
+        if (!groups.has(assignee)) groups.set(assignee, []);
+        return groups.get(assignee);
+      }
+
+      state.menus.forEach(menuItem => {
+        if (!selected.has(menuItem.id)) return;
+        const multiplier = effectiveMenuMultiplier(menuItem);
+        const cheeseTofuBuy = normalize(menuItem.name).includes(normalize("チーズ豆腐"));
+        menuItem.ingredients.forEach(ingredient => {
+          const assignee = cheeseTofuBuy ? "buy" : ruleForIngredient(ingredient.name);
+          const fallbackToBuy = shouldMoveToBuyWhenVendorUnavailable(assignee, ingredient, menuItem, day);
+          const displayAssignee = fallbackToBuy ? "buy" : assignee;
+          const isVendor = BASE_VENDOR_IDS.includes(assignee);
+          if (isVendor && !day.vendors.includes(assignee) && !fallbackToBuy) return;
+          ensureGroup(displayAssignee).push({
+            name: ingredient.name.trim(),
+            qty: scaleQuantity(ingredient.qty.trim(), multiplier),
+            source: `${multiplier > 1 ? `${menuItem.name} x${multiplier}` : menuItem.name}${fallbackToBuy ? `（${assigneeById(assignee).label}発注不可）` : ""}`
+          });
+        });
+      });
+
+      const result = [...groups.entries()].map(([assignee, rawItems]) => {
+        const map = new Map();
+        rawItems.forEach(item => {
+          const key = normalize(item.name);
+          if (!key) return;
+          if (!map.has(key)) {
+            map.set(key, { id: `${assignee}:${key}`, name: item.name, entries: [] });
+          }
+          map.get(key).entries.push({ qty: item.qty, source: item.source });
+        });
+        return {
+          assignee,
+          meta: assigneeById(assignee),
+          items: [...map.values()]
+        };
+      });
+
+      return result.sort((a, b) => a.meta.order - b.meta.order);
+    }
+
+    function itemSummary(item) {
+      return item.entries.map(entry => {
+        const qty = entry.qty ? ` ${entry.qty}` : "";
+        return `${entry.source}${qty}`;
+      }).join(" / ");
+    }
+
+    function assigneeOptions(selectedAssignee = "") {
+      return `<option value="">発注会社を選択</option>` + allAssignees()
+        .filter(item => item.id !== "unknown")
+        .map(item => `<option value="${item.id}" ${item.id === selectedAssignee ? "selected" : ""}>${escapeHtml(item.label)}</option>`)
+        .join("") + `<option value="__new_company__">新しい会社を追加</option>`;
+    }
+
+    function upsertMaterialRule(material, assignee) {
+      if (!material || !assignee) return;
+      const exact = state.rules.find(rule => normalize(rule.material) === normalize(material));
+      if (exact) exact.assignee = assignee;
+      else state.rules.unshift({ id: uid(), material, assignee });
+    }
+
+    function sharedPayload() {
+      return {
+        version: 1,
+        menus: state.menus,
+        rules: state.rules,
+        companies: state.companies
+      };
+    }
+
+    function encodeSharePayload(payload) {
+      const json = JSON.stringify(payload);
+      const bytes = new TextEncoder().encode(json);
+      let binary = "";
+      bytes.forEach(byte => binary += String.fromCharCode(byte));
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function decodeSharePayload(encoded) {
+      const normalized = encoded.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+      const binary = atob(padded);
+      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    function sharedDataText() {
+      return `KIBARIYA1.${encodeSharePayload(sharedPayload())}`;
+    }
+
+    function payloadFromSharedText(text) {
+      const value = String(text || "").trim();
+      if (!value) return null;
+
+      try {
+        const url = new URL(value);
+        const queryData = url.searchParams.get("k");
+        if (queryData) return decodeSharePayload(queryData);
+      } catch (error) {}
+
+      const queryIndex = value.indexOf("?k=");
+      if (queryIndex >= 0) {
+        const queryValue = value.slice(queryIndex + 3).split("&")[0].split("#")[0];
+        return decodeSharePayload(decodeURIComponent(queryValue));
+      }
+
+      const hashIndex = value.indexOf("#");
+      if (hashIndex > 0) return payloadFromSharedText(value.slice(hashIndex));
+
+      if (value.startsWith("#k=")) return decodeSharePayload(value.slice(3));
+      if (value.startsWith("KIBARIYA1.")) return decodeSharePayload(value.slice("KIBARIYA1.".length));
+      if (value.startsWith("#kibariya=")) return JSON.parse(decodeURIComponent(value.slice("#kibariya=".length)));
+      if (value.startsWith("{")) return JSON.parse(value);
+      return decodeSharePayload(value);
+    }
+
+    function applySharedPayload(payload) {
+      if (!payload || !Array.isArray(payload.menus) || !Array.isArray(payload.rules)) {
+        throw new Error("invalid shared payload");
+      }
+      state.menus = payload.menus;
+      state.rules = payload.rules;
+      state.companies = Array.isArray(payload.companies) ? payload.companies : [];
+      state.selectedMenus = {};
+      state.menuMultipliers = {};
+      state.orderSettings = {};
+      save(STORAGE_KEYS.menus, state.menus);
+      save(STORAGE_KEYS.rules, state.rules);
+      save(STORAGE_KEYS.companies, state.companies);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      save(STORAGE_KEYS.orderSettings, state.orderSettings);
+    }
+
+    function applySharedDataFromUrl() {
+      const queryData = new URLSearchParams(location.search).get("k");
+      const sharedText = queryData ? `KIBARIYA1.${queryData}` : location.hash;
+      if (!sharedText) return false;
+      try {
+        applySharedPayload(payloadFromSharedText(sharedText));
+        return true;
+      } catch (error) {
+        return "error";
+      }
+    }
+
+    function shareUrl() {
+      const base = location.href.split("#")[0].split("?")[0];
+      return `${base}?k=${encodeSharePayload(sharedPayload())}`;
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard?.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      const input = document.createElement("textarea");
+      input.value = text;
+      input.setAttribute("readonly", "");
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+      return Promise.resolve();
+    }
+
+    function migrateStoredData({ imported = false } = {}) {
+      const shiitake = state.rules.find(rule => normalize(rule.material) === normalize("しいたけ"));
+      if (shiitake) shiitake.assignee = "muraoka";
+      else state.rules.unshift({ id: uid(), material: "しいたけ", assignee: "muraoka" });
+      upsertMaterialRule("上新粉", "nabata");
+      upsertMaterialRule("小麦粉", "nabata");
+      const springRoll = state.menus.find(menuItem => normalize(menuItem.name) === normalize("春巻き"));
+      const springRollShiitake = springRoll?.ingredients.find(item => normalize(item.name) === normalize("しいたけ"));
+      if (springRollShiitake) {
+        springRollShiitake.qty = "6個入りを5";
+        save(STORAGE_KEYS.menus, state.menus);
+      }
+      const waterMenu = state.menus.find(menuItem => normalize(menuItem.name) === normalize("水炊き（4人前基準）"));
+      if (waterMenu) {
+        waterMenu.name = "水炊き";
+        save(STORAGE_KEYS.menus, state.menus);
+      }
+      if (!menuByName("手羽唐")) {
+        state.menus.push(menu("手羽唐", [["上新粉","在庫確認"],["小麦粉","在庫確認"]]));
+        save(STORAGE_KEYS.menus, state.menus);
+      }
+      const hasSilkenTofuRule = state.rules.some(rule => normalize(rule.material) === normalize("絹豆腐"));
+      // Apply once to existing data; also accept older shared data after updating.
+      if (!readJson(STORAGE_KEYS.silkenTofuMigrated, false) || (imported && !hasSilkenTofuRule)) {
+        state.menus.forEach(menuItem => {
+          if (!["水炊き", "すき焼き"].includes(normalize(menuItem.name))) return;
+          menuItem.ingredients.forEach(ingredient => {
+            if (nameCandidates("豆腐").some(name => normalize(ingredient.name) === normalize(name))) {
+              ingredient.name = "絹豆腐";
+            }
+          });
+        });
+        upsertMaterialRule("絹豆腐", "muraoka");
+        save(STORAGE_KEYS.menus, state.menus);
+        save(STORAGE_KEYS.rules, state.rules);
+        save(STORAGE_KEYS.silkenTofuMigrated, true);
+      }
+      save(STORAGE_KEYS.rules, state.rules);
+    }
+
+    function renderAppShell() {
+      document.title = APP_TITLE;
+      document.querySelectorAll("[data-app-title]").forEach((el) => {
+        el.textContent = APP_TITLE;
+      });
+      const appRoot = document.getElementById("appRoot");
+      appRoot?.classList.toggle("home-mode", state.activeScreen === "home");
+      appRoot?.classList.toggle("visual-bg-mode", ["home", "order", "agent", "manage"].includes(state.activeScreen));
+    }
+
+    function applyScreenVisibility() {
+      document.getElementById("homeScreen").classList.toggle("active", state.activeScreen === "home");
+      document.getElementById("orderScreen").classList.toggle("active", state.activeScreen === "order");
+      document.getElementById("manageScreen").classList.toggle("active", state.activeScreen === "manage");
+      document.getElementById("agentScreen").classList.toggle("active", state.activeScreen === "agent");
+    }
+
+    function render() {
+      applyScreenVisibility();
+      renderAppShell();
+      renderTabs();
+      renderOrder();
+      renderManage();
+      renderAgent();
+      renderNav();
+    }
+
+    function renderTabs() {
+      const box = document.getElementById("dayTabs");
+      box.innerHTML = DAYS.map((day, index) => `
+        <button class="day-btn ${index === state.selectedDay ? "active" : ""}" data-day="${index}" type="button">${day.label}</button>
+      `).join("");
+      box.querySelectorAll(".day-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          setSelectedDate(dateForWeekday(Number(btn.dataset.day)));
+          renderTabs();
+          renderOrder();
+        });
+      });
+    }
+
+    function renderMenuSelection() {
+      const box = document.getElementById("menuSelection");
+      const selected = selectedMenuIds();
+      const effectiveSelected = effectiveSelectedMenuIds();
+      if (state.selectedMenus[state.selectedDate]?.length !== selected.length) {
+        saveSelectedMenuIds(state.selectedDate, selected);
+      }
+
+      if (!state.menus.length) {
+        box.innerHTML = `
+          <div class="panel selector-panel">
+            <div class="selector-title">仕込み・料理を選択</div>
+            <div class="selector-sub">メニュー管理で料理を登録すると、ここから選べます。</div>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="panel selector-panel">
+          <div class="selector-head">
+            <div>
+              <div class="selector-title">仕込み・料理を選択</div>
+              <div class="selector-sub">選んだ料理に必要な材料だけを発注リストに表示します。選択中 ${selected.length} / ${state.menus.length}</div>
+            </div>
+          </div>
+          <div class="menu-options">
+            ${state.menus.map(menuItem => {
+              const checked = selected.includes(menuItem.id);
+              const multiplier = menuMultiplier(menuItem.id);
+              const autoSelected = !checked && effectiveSelected.includes(menuItem.id);
+              const servesFourBase = ["水炊き", "すき焼き"].some(name => normalize(menuItem.name).includes(normalize(name)));
+              const servingNote = servesFourBase
+                ? `<span class="serving-note">現在${multiplier * 4}人分</span>`
+                : "";
+              return `
+                <label class="menu-option ${checked || autoSelected ? "selected" : ""}">
+                  <input type="checkbox" class="menu-select" data-menu="${menuItem.id}" ${checked || autoSelected ? "checked" : ""} ${autoSelected ? "disabled" : ""} />
+                  <span class="menu-option-text">
+                    <span class="menu-option-name">${escapeHtml(menuItem.name)}${servingNote}</span>
+                    ${autoSelected ? `<span class="menu-option-detail">自動追加</span>` : ""}
+                  </span>
+                  <span class="menu-stepper ${checked || autoSelected ? "" : "disabled"}" aria-label="仕込み数量">
+                    <button class="stepper-btn" type="button" data-step-menu="${menuItem.id}" data-step="-1">-</button>
+                    <span class="stepper-count">${multiplier}</span>
+                    <button class="stepper-btn" type="button" data-step-menu="${menuItem.id}" data-step="1">+</button>
+                  </span>
+                </label>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+
+      box.querySelectorAll(".menu-select").forEach(input => {
+        input.addEventListener("change", () => {
+          toggleMenuSelection(input.dataset.menu, input.checked);
+          renderOrder();
+        });
+      });
+      box.querySelectorAll("[data-step-menu]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const menuId = button.dataset.stepMenu;
+          const step = Number(button.dataset.step);
+          const current = menuMultiplier(menuId);
+          const selectedIds = selectedMenuIds();
+          if (!selectedIds.includes(menuId)) saveSelectedMenuIds(state.selectedDate, [...selectedIds, menuId]);
+          saveMenuMultiplier(menuId, Math.max(1, current + step));
+          renderOrder();
+        });
+      });
+    }
+
+    function renderOrder() {
+      const alerts = document.getElementById("orderAlerts");
+      const list = document.getElementById("taskList");
+      const menuSelection = document.getElementById("menuSelection");
+      const orderActions = document.querySelector(".order-actions");
+      const completeActions = document.querySelector(".complete-actions");
+      alerts.innerHTML = "";
+
+      if (state.selectedDay === null) {
+        menuSelection.innerHTML = "";
+        list.innerHTML = "";
+        document.getElementById("statusMsg").textContent = "";
+        if (orderActions) orderActions.style.display = "none";
+        if (completeActions) completeActions.style.display = "none";
+        alerts.innerHTML = `<div class="notice">まず曜日を選択してください。曜日を選ぶと、本日の2日分発注と必要な発注リストを確認できます</div>`;
+        return;
+      }
+
+      if (orderActions) orderActions.style.display = "flex";
+      if (completeActions) completeActions.style.display = "flex";
+      const day = DAYS[state.selectedDay];
+      const selected = effectiveSelectedMenuIds();
+      const selectedMenusSet = new Set(selected);
+      renderMenuSelection();
+      const twoDayLabels = day.twoDay.map(id => assigneeById(id).label.replace("（びっぐえっぐ）", ""));
+      if (twoDayLabels.length) {
+        alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>本日は、【${escapeHtml(twoDayLabels.join("・"))}】が2日分発注です！</span></div>`;
+      }
+      const tebaMenu = menuByName("手羽唐");
+      if (tebaMenu && selectedMenusSet.has(tebaMenu.id)) {
+        alerts.innerHTML += `<div class="alert"><span>⚠️</span><span>手羽唐: 上新粉と小麦粉の在庫確認をしてください</span></div>`;
+      }
+      const cheeseMenu = menuByName("チーズ豆腐");
+      if (cheeseMenu && selectedMenusSet.has(cheeseMenu.id)) {
+        alerts.innerHTML += `<div class="notice">チーズ豆腐の原材料は、当日の買い出しリストへ自動追加しています</div>`;
+      }
+      if (!selected.length) {
+        alerts.innerHTML += `<div class="notice">まず仕込み・料理名を選択してください。選んだメニューの材料だけを発注リストに表示します</div>`;
+      }
+      if (day.vendors.length === 0) {
+        alerts.innerHTML += `<div class="notice">本日の業者発注はありません。買い出し・店長連絡のみ確認してください</div>`;
+      }
+
+      const groups = visibleGroups();
+      const allItems = groups.flatMap(group => group.assignee === "buy" ? [] : group.items);
+      const done = allItems.filter(item => isChecked(state.selectedDate, item.id)).length;
+      const total = allItems.length;
+      document.getElementById("statusMsg").textContent = total ? `${done} / ${total} 確認済み` : "";
+
+      if (groups.length === 0) {
+        list.innerHTML = `<div class="panel empty">${selected.length ? "選択したメニューで本日発注する項目はありません" : "上の一覧から仕込み・料理を選択してください"}</div>`;
+        return;
+      }
+
+      list.innerHTML = groups.map(group => {
+        const isBuyGroup = group.assignee === "buy";
+        const checkedCount = isBuyGroup ? 0 : group.items.filter(item => isChecked(state.selectedDate, item.id)).length;
+        const totalCount = group.items.length;
+        const twoBadge = day.twoDay.includes(group.assignee) ? `<span class="badge two">2日分</span>` : "";
+        const subText = isBuyGroup ? `${totalCount}件` : `${checkedCount} / ${totalCount} 完了`;
+        const body = group.items.length ? `
+          ${group.assignee === "egg" ? `<div class="script">電話帳 ➔ びっくえっぐ ➔ 外線。お疲れ様です。きばり屋です。卵の発注をお願いします。数量は本日の必要数に合わせて確認してください。</div>` : ""}
+          ${group.items.map(item => itemRow(item, group.assignee)).join("")}
+        ` : `<div class="empty">登録材料なし</div>`;
+        return `
+          <article class="accordion open" data-group="${group.assignee}">
+            <div class="acc-head">
+              <span class="acc-main">
+                <span class="group-icon ${group.meta.cls}">${group.meta.icon}</span>
+                <span>
+                  <span class="acc-title">${escapeHtml(group.meta.label)}</span>
+                  <span class="acc-sub">${subText}</span>
+                  <span class="badge-row">${twoBadge}${!isBuyGroup && checkedCount === totalCount && totalCount ? `<span class="badge done">完了</span>` : ""}</span>
+                </span>
+              </span>
+            </div>
+            <div class="acc-body">${body}</div>
+          </article>
+        `;
+      }).join("");
+
+      list.querySelectorAll(".check").forEach(input => {
+        input.addEventListener("change", () => {
+          setChecked(state.selectedDate, input.dataset.item, input.checked);
+          renderOrder();
+        });
+      });
+    }
+
+    function itemRow(item, assignee) {
+      if (assignee === "buy") {
+        return `
+          <div class="item-row display-only">
+            <span>
+              <span class="item-name">${escapeHtml(item.name)}</span>
+              <span class="item-detail">${escapeHtml(itemSummary(item))}</span>
+            </span>
+          </div>
+        `;
+      }
+      return `
+        <label class="item-row">
+          <input class="check" type="checkbox" data-item="${escapeHtml(item.id)}" ${isChecked(state.selectedDate, item.id) ? "checked" : ""} />
+          <span>
+            <span class="item-name">${escapeHtml(item.name)}</span>
+            <span class="item-detail">${escapeHtml(itemSummary(item))}</span>
+          </span>
+        </label>
+      `;
+    }
+
+    function renderManage() {
+      renderIngredientRows();
+      renderMenuList();
+      renderCompanyList();
+      renderManageSections();
+    }
+
+    function renderManageSections() {
+      [
+        { key: "menus", button: "toggleMenuListBtn", panel: "menuListPanel", label: "メニュー一覧" },
+        { key: "companies", button: "toggleCompanyListBtn", panel: "companyListPanel", label: "登録済み発注会社" }
+      ].forEach(item => {
+        const btn = document.getElementById(item.button);
+        const panel = document.getElementById(item.panel);
+        if (!btn || !panel) return;
+        const expanded = Boolean(state.manageSections[item.key]);
+        panel.hidden = !expanded;
+        btn.classList.toggle("open", expanded);
+        btn.setAttribute("aria-expanded", String(expanded));
+        btn.setAttribute("aria-label", `${item.label}を${expanded ? "閉じる" : "表示"}`);
+      });
+    }
+
+    function toggleManageSection(key) {
+      state.manageSections[key] = !state.manageSections[key];
+      renderManageSections();
+    }
+
+    function renderIngredientRows() {
+      const box = document.getElementById("ingredientRows");
+      if (!box.children.length) addIngredientRow();
+    }
+
+    function refreshIngredientAssigneeOptions(preferredAssignee = "") {
+      document.querySelectorAll(".ingredient-assignee").forEach(select => {
+        const current = select.value;
+        const nextValue = current && assigneeById(current).id !== "unknown" ? current : preferredAssignee;
+        select.innerHTML = assigneeOptions(nextValue);
+        select.value = nextValue;
+      });
+    }
+
+    function toHalfWidthNumberText(value) {
+      return String(value).replace(/[０-９．]/g, char => {
+        if (char === "．") return ".";
+        return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
+      });
+    }
+
+    function formatAdjustedNumber(value) {
+      return Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10);
+    }
+
+    function adjustQuantityText(value, delta) {
+      const raw = String(value || "").trim();
+      if (!raw) return delta > 0 ? "1" : "0";
+      const normalized = toHalfWidthNumberText(raw);
+      const match = normalized.match(/-?\d+(?:\.\d+)?/);
+      if (!match) return delta > 0 ? `${raw} 1` : raw;
+      const current = Number(match[0]);
+      const next = Math.max(0, current + delta);
+      const adjusted = formatAdjustedNumber(next);
+      return raw.slice(0, match.index) + adjusted + raw.slice(match.index + match[0].length);
+    }
+
+    function addIngredientRow(name = "", qty = "", assignee = "") {
+      const box = document.getElementById("ingredientRows");
+      const selectedAssignee = assignee || (name ? ruleForIngredient(name) : "");
+      const selected = selectedAssignee === "unknown" ? "" : selectedAssignee;
+      const row = document.createElement("div");
+      row.className = "ingredient-row";
+      row.innerHTML = `
+        <input type="text" class="ingredient-name" placeholder="材料名" value="${escapeHtml(name)}" autocomplete="off" />
+        <div class="qty-stepper" aria-label="数量調整">
+          <button class="qty-stepper-btn qty-minus" type="button" aria-label="数量を減らす">−</button>
+          <input type="text" class="ingredient-qty" placeholder="数量" value="${escapeHtml(qty)}" autocomplete="off" inputmode="decimal" />
+          <button class="qty-stepper-btn qty-plus" type="button" aria-label="数量を増やす">＋</button>
+        </div>
+        <button class="icon-btn remove-ingredient-btn" type="button" aria-label="材料行を削除">×</button>
+        <select class="ingredient-assignee" aria-label="発注会社">
+          ${assigneeOptions(selected)}
+        </select>
+      `;
+      row.querySelector(".qty-minus").addEventListener("click", () => {
+        const input = row.querySelector(".ingredient-qty");
+        input.value = adjustQuantityText(input.value, -1);
+      });
+      row.querySelector(".qty-plus").addEventListener("click", () => {
+        const input = row.querySelector(".ingredient-qty");
+        input.value = adjustQuantityText(input.value, 1);
+      });
+      row.querySelector(".remove-ingredient-btn").addEventListener("click", () => {
+        if (box.children.length > 1) row.remove();
+        else {
+          row.querySelector(".ingredient-name").value = "";
+          row.querySelector(".ingredient-qty").value = "";
+          row.querySelector(".ingredient-assignee").value = "";
+        }
+      });
+      row.querySelector(".ingredient-assignee").addEventListener("change", event => {
+        if (event.target.value !== "__new_company__") return;
+        event.target.value = "";
+        focusCompanyForm();
+      });
+      box.appendChild(row);
+    }
+
+    function clearMenuForm() {
+      document.getElementById("formTitle").textContent = "新規メニュー追加";
+      document.getElementById("menuId").value = "";
+      document.getElementById("menuName").value = "";
+      document.getElementById("ingredientRows").innerHTML = "";
+      addIngredientRow();
+    }
+
+    function saveMenuFromForm() {
+      const id = document.getElementById("menuId").value || uid();
+      const name = document.getElementById("menuName").value.trim();
+      const ingredients = [...document.querySelectorAll(".ingredient-row")].map(row => ({
+        id: uid(),
+        name: row.querySelector(".ingredient-name").value.trim(),
+        qty: row.querySelector(".ingredient-qty").value.trim(),
+        assignee: row.querySelector(".ingredient-assignee").value
+      })).filter(item => item.name);
+
+      if (!name) return toast("料理名を入力してください");
+      if (!ingredients.length) return toast("材料を1つ以上入力してください");
+      if (ingredients.some(item => item.assignee === "__new_company__")) {
+        focusCompanyForm();
+        return toast("先に発注会社を追加してください");
+      }
+
+      ingredients.forEach(item => upsertMaterialRule(item.name, item.assignee));
+      save(STORAGE_KEYS.rules, state.rules);
+
+      const next = {
+        id,
+        name,
+        ingredients: ingredients.map(item => ({ id: item.id, name: item.name, qty: item.qty }))
+      };
+      const index = state.menus.findIndex(item => item.id === id);
+      const isNewMenu = index < 0;
+      if (index >= 0) state.menus.splice(index, 1, next);
+      else state.menus.unshift(next);
+      save(STORAGE_KEYS.menus, state.menus);
+      clearMenuForm();
+      render();
+      toast("メニューを保存しました");
+      if (isNewMenu && confirm("新しいメニューを保存しました。共有データをコピーしますか？")) {
+        copyText(sharedDataText())
+          .then(() => toast("共有データをコピーしました"))
+          .catch(() => toast("コピーできませんでした。共有欄からコピーしてください"));
+      }
+    }
+
+    function editMenu(id) {
+      const target = state.menus.find(item => item.id === id);
+      if (!target) return;
+      document.getElementById("formTitle").textContent = "メニュー編集";
+      document.getElementById("menuId").value = target.id;
+      document.getElementById("menuName").value = target.name;
+      const box = document.getElementById("ingredientRows");
+      box.innerHTML = "";
+      target.ingredients.forEach(item => addIngredientRow(item.name, item.qty, ruleForIngredient(item.name)));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function deleteMenu(id) {
+      const target = state.menus.find(item => item.id === id);
+      if (!target) return;
+      const ok = await askConfirm("本当に削除しますか？", `「${target.name}」をメニュー一覧から削除します。`);
+      if (!ok) return;
+      state.menus = state.menus.filter(item => item.id !== id);
+      removeMenuFromSelections(id);
+      save(STORAGE_KEYS.menus, state.menus);
+      render();
+      toast("メニューを削除しました");
+    }
+
+    function renderMenuSelectionControls() {
+      const selectBtn = document.getElementById("selectMenuModeBtn");
+      const deleteBtn = document.getElementById("bulkDeleteMenusBtn");
+      const cancelBtn = document.getElementById("cancelMenuSelectBtn");
+      if (!selectBtn || !deleteBtn || !cancelBtn) return;
+      const selecting = state.menuSelectionMode;
+      selectBtn.hidden = selecting;
+      deleteBtn.hidden = !selecting;
+      cancelBtn.hidden = !selecting;
+      deleteBtn.disabled = !state.selectedManageMenus.length;
+      deleteBtn.textContent = state.selectedManageMenus.length ? `削除 ${state.selectedManageMenus.length}` : "削除";
+    }
+
+    function startMenuSelectionMode() {
+      state.menuSelectionMode = true;
+      state.selectedManageMenus = [];
+      state.manageSections.menus = true;
+      renderManage();
+    }
+
+    function cancelMenuSelectionMode() {
+      state.menuSelectionMode = false;
+      state.selectedManageMenus = [];
+      renderManage();
+    }
+
+    async function deleteSelectedMenus() {
+      if (!state.selectedManageMenus.length) {
+        toast("削除するメニューを選択してください");
+        return;
+      }
+      const targets = state.menus.filter(item => state.selectedManageMenus.includes(item.id));
+      const ok = await askConfirm("選択したメニューを削除しますか？", `${targets.length}件のメニューをメニュー一覧から削除します。`);
+      if (!ok) return;
+      const targetIds = new Set(targets.map(item => item.id));
+      state.menus = state.menus.filter(item => !targetIds.has(item.id));
+      targets.forEach(item => removeMenuFromSelections(item.id));
+      state.menuSelectionMode = false;
+      state.selectedManageMenus = [];
+      save(STORAGE_KEYS.menus, state.menus);
+      render();
+      toast("選択したメニューを削除しました");
+    }
+
+    function renderMenuList() {
+      const box = document.getElementById("menuList");
+      state.selectedManageMenus = state.selectedManageMenus.filter(id => state.menus.some(item => item.id === id));
+      if (!state.menus.length) {
+        box.innerHTML = `<div class="panel empty">メニューがありません</div>`;
+        renderMenuSelectionControls();
+        return;
+      }
+      box.innerHTML = state.menus.map(item => `
+        <article class="menu-card ${state.selectedManageMenus.includes(item.id) ? "selected" : ""}">
+          <div class="menu-card-head">
+            <div class="menu-card-main">
+              ${state.menuSelectionMode ? `<input class="menu-select-check" type="checkbox" data-select-menu="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.name)}を選択" ${state.selectedManageMenus.includes(item.id) ? "checked" : ""} />` : ""}
+              <div class="menu-name">${escapeHtml(item.name)}</div>
+            </div>
+            <div class="card-actions">
+              <button class="menu-toggle" type="button" data-toggle-menu="${escapeHtml(item.id)}" aria-expanded="false" aria-label="${escapeHtml(item.name)}の材料を表示">⌄</button>
+              ${state.menuSelectionMode ? "" : `
+                <button class="tiny-btn" type="button" data-edit-menu="${item.id}">編集</button>
+                <button class="tiny-btn" type="button" data-delete-menu="${item.id}">削除</button>
+              `}
+            </div>
+          </div>
+          <div class="chips" aria-hidden="true">
+            ${item.ingredients.map(ing => {
+              const assignee = ruleForIngredient(ing.name);
+              const assigneeLabel = assigneeById(assignee).label;
+              return `<span class="badge">${escapeHtml(ing.name)}${ing.qty ? ` ${escapeHtml(ing.qty)}` : ""} / ${escapeHtml(assigneeLabel)}</span>`;
+            }).join("")}
+          </div>
+        </article>
+      `).join("");
+      box.querySelectorAll("[data-toggle-menu]").forEach(btn => btn.addEventListener("click", () => {
+        const card = btn.closest(".menu-card");
+        const details = card.querySelector(".chips");
+        const expanded = card.classList.toggle("expanded");
+        btn.setAttribute("aria-expanded", String(expanded));
+        btn.setAttribute("aria-label", `${expanded ? "非表示" : "表示"}: ${card.querySelector(".menu-name").textContent}の材料`);
+        details.setAttribute("aria-hidden", String(!expanded));
+      }));
+      box.querySelectorAll("[data-select-menu]").forEach(input => input.addEventListener("change", () => {
+        if (input.checked && !state.selectedManageMenus.includes(input.dataset.selectMenu)) {
+          state.selectedManageMenus.push(input.dataset.selectMenu);
+        }
+        if (!input.checked) {
+          state.selectedManageMenus = state.selectedManageMenus.filter(id => id !== input.dataset.selectMenu);
+        }
+        renderMenuList();
+      }));
+      box.querySelectorAll("[data-edit-menu]").forEach(btn => btn.addEventListener("click", () => editMenu(btn.dataset.editMenu)));
+      box.querySelectorAll("[data-delete-menu]").forEach(btn => btn.addEventListener("click", () => deleteMenu(btn.dataset.deleteMenu)));
+      renderMenuSelectionControls();
+    }
+
+    function clearCompanyForm() {
+      document.getElementById("companyId").value = "";
+      document.getElementById("companyName").value = "";
+    }
+
+    function focusCompanyForm() {
+      switchScreen("manage");
+      clearCompanyForm();
+      const input = document.getElementById("companyName");
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => input.focus(), 250);
+      toast("発注会社名を追加してください");
+    }
+
+    function saveCompanyFromForm() {
+      const id = document.getElementById("companyId").value || `company_${uid()}`;
+      const label = document.getElementById("companyName").value.trim();
+      if (!label) return toast("発注会社名を入力してください");
+      const duplicate = allAssignees().find(company => normalize(company.label) === normalize(label) && company.id !== id);
+      if (duplicate) return toast("同じ会社名があります");
+      const next = { id, label };
+      const index = state.companies.findIndex(company => company.id === id);
+      if (index >= 0) state.companies.splice(index, 1, next);
+      else state.companies.unshift(next);
+      save(STORAGE_KEYS.companies, state.companies);
+      clearCompanyForm();
+      render();
+      refreshIngredientAssigneeOptions(index < 0 ? id : "");
+      toast("発注会社を保存しました");
+    }
+
+    function editCompany(id) {
+      const target = state.companies.find(company => company.id === id);
+      if (!target) return;
+      document.getElementById("companyId").value = target.id;
+      document.getElementById("companyName").value = target.label;
+    }
+
+    function deleteCompany(id) {
+      const target = state.companies.find(company => company.id === id);
+      if (!target) return;
+      if (!confirm(`「${target.label}」を削除しますか？`)) return;
+      state.companies = state.companies.filter(company => company.id !== id);
+      save(STORAGE_KEYS.companies, state.companies);
+      render();
+      refreshIngredientAssigneeOptions();
+      toast("発注会社を削除しました");
+    }
+
+    function renderCompanyList() {
+      const box = document.getElementById("companyList");
+      const fixed = allAssignees().filter(item => item.id !== "unknown" && !item.custom);
+      const custom = state.companies;
+      box.innerHTML = `
+        ${fixed.map(company => `
+          <div class="rule-item">
+            <div>
+              <div class="rule-name">${escapeHtml(company.label)}</div>
+              <div class="rule-assignee">初期登録</div>
+            </div>
+          </div>
+        `).join("")}
+        ${custom.map(company => `
+          <div class="rule-item">
+            <div>
+              <div class="rule-name">${escapeHtml(company.label)}</div>
+              <div class="rule-assignee">追加会社</div>
+            </div>
+            <div class="card-actions">
+              <button class="tiny-btn" type="button" data-edit-company="${company.id}">編集</button>
+              <button class="tiny-btn" type="button" data-delete-company="${company.id}">削除</button>
+            </div>
+          </div>
+        `).join("")}
+      `;
+      box.querySelectorAll("[data-edit-company]").forEach(btn => btn.addEventListener("click", () => editCompany(btn.dataset.editCompany)));
+      box.querySelectorAll("[data-delete-company]").forEach(btn => btn.addEventListener("click", () => deleteCompany(btn.dataset.deleteCompany)));
+    }
+
+    function renderAgent() {
+      const input = document.getElementById("agentPromptInput");
+      const button = document.getElementById("askAgentBtn");
+      const resetButton = document.getElementById("resetAgentBtn");
+      if (!input || !button) return;
+      button.onclick = () => answerTypedQuestion(input.value);
+      if (resetButton) resetButton.onclick = resetAgentQuestion;
+    }
+
+    function setAgentAnswer(title, body) {
+      document.querySelector("#agentAnswer .agent-answer-title").textContent = title;
+      document.querySelector("#agentAnswer .agent-answer-body").textContent = body;
+    }
+
+    function resetAgentQuestion() {
+      const input = document.getElementById("agentPromptInput");
+      if (input) input.value = "";
+      setAgentAnswer("質問を入力してください", "");
+      toast("相談内容をリセットしました");
+    }
+
+    function selectedDayOrMessage() {
+      if (state.selectedDay === null) return null;
+      return DAYS[state.selectedDay];
+    }
+
+    function formatGroupLines(groups) {
+      return groups.map(group => {
+        const items = group.items.map(item => `${item.name}（${itemSummary(item)}）`).join("、");
+        return `・${group.meta.label}: ${items || "該当なし"}`;
+      }).join("\n");
+    }
+
+    function dayFromText(text) {
+      const t = normalize(text);
+      if (t.includes("今日") || t.includes("本日")) return new Date().getDay();
+      if (t.includes("明後日") || t.includes("あさって")) return (new Date().getDay() + 2) % 7;
+      if (t.includes("明日") || t.includes("あした") || t.includes("翌日")) return (new Date().getDay() + 1) % 7;
+      return DAYS.findIndex(day => t.includes(normalize(`${day.label}曜`)) || t.includes(normalize(day.full)));
+    }
+
+    function materialFromText(text) {
+      return [...state.rules]
+        .map(rule => rule.material)
+        .filter(Boolean)
+        .sort((a, b) => normalize(b).length - normalize(a).length)
+        .find(material => textIncludesName(text, material));
+    }
+
+    function courseNameFromText(text) {
+      if (textIncludesName(text, "水炊き")) return "水炊き";
+      if (textIncludesName(text, "すき焼き")) return "すき焼き";
+      return "";
+    }
+
+    function cleanQuantityUnit(unit) {
+      let value = String(unit || "");
+      ["しかない", "足りない", "でいい", "だったら", "ください", "しか", "だけ", "ある", "あり", "残り", "残", "在庫", "なら", "発注", "注文", "必要", "足りる", "です", "か"].forEach(word => {
+        value = value.replace(new RegExp(`${word}$`), "");
+      });
+      return value.replace(/[？?。,.、，]$/g, "");
+    }
+
+    function quantityFromText(text) {
+      const normalizedText = String(text || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedText.match(/(\d+(?:\.\d+)?)\s*([^\d\s。、，,.！？?]*)(?:しか|だけ|ある|残|在庫|$)/);
+      if (!match) return null;
+      const unit = cleanQuantityUnit(match[2]);
+      return {
+        value: Number(match[1]),
+        unit,
+        label: `${match[1]}${unit}`
+      };
+    }
+
+    function roundingQuantityFromText(text) {
+      const normalizedText = String(text || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedText.match(/(\d+(?:\.\d+)?)\s*([^\d\s。、，,.！？?]*)(?:って|は|を|で|発注|注文|$)/);
+      if (!match) return null;
+      const value = Number(match[1]);
+      if (!Number.isFinite(value) || Number.isInteger(value)) return null;
+      const unit = cleanQuantityUnit(match[2]);
+      return {
+        value,
+        rounded: Math.round(value),
+        unit,
+        label: `${match[1]}${unit}`
+      };
+    }
+
+    function parseMenuQuantity(qty) {
+      const normalizedQty = String(qty || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = normalizedQty.match(/(\d+(?:\.\d+)?)\s*([^\d\s、，,.]*)/);
+      if (!match) return null;
+      return {
+        value: Number(match[1]),
+        unit: match[2] || "",
+        raw: qty
+      };
+    }
+
+    function materialUsage(material, selectedOnly = true) {
+      const ids = new Set(selectedOnly ? effectiveSelectedMenuIds() : state.menus.map(menuItem => menuItem.id));
+      return state.menus
+        .filter(menuItem => ids.has(menuItem.id))
+        .flatMap(menuItem => menuItem.ingredients
+          .filter(ingredient => normalize(ingredient.name) === normalize(material))
+          .map(ingredient => ({ menu: menuItem.name, qty: ingredient.qty || "" })));
+    }
+
+    function isGenericNegiText(text) {
+      const t = normalize(text);
+      const hasNegi = ["ネギ", "ねぎ", "葱"].some(word => t.includes(normalize(word)));
+      const hasSpecificNegi = ["白ネギ", "長ネギ", "細ネギ"].some(name => textIncludesName(text, name));
+      return hasNegi && !hasSpecificNegi;
+    }
+
+    function footRequirementFromQty(qty) {
+      const text = String(qty || "").replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0));
+      const match = text.match(/(\d+(?:\.\d+)?)\s*足/);
+      return match ? Number(match[1]) : null;
+    }
+
+    function isAssigneeScheduled(assignee, day) {
+      if (!day) return false;
+      if (assignee === "buy" || assignee === "manager") return true;
+      if (BASE_VENDOR_IDS.includes(assignee)) return day.vendors.includes(assignee);
+      return true;
+    }
+
+    function answerCourseQuestion(text, courseName) {
+      const guests = quantityFromText(text)?.value || 0;
+      if (!guests) {
+        setAgentAnswer(`${courseName}コースの発注計算`, `予約人数を入れて聞いてください。\n例: 明日${courseName}コース8名なら何を発注？`);
+        return;
+      }
+      const menuItem = menuByName(courseName);
+      if (!menuItem) {
+        setAgentAnswer(`${courseName}コースの発注計算`, `${courseName}のメニュー登録が見つかりません。メニュー管理を確認してください。`);
+        return;
+      }
+      const multiplier = Math.max(1, Math.ceil(guests / 4));
+      const lines = menuItem.ingredients.map(ingredient => {
+        const qty = ingredient.qty ? `${scaleQuantity(ingredient.qty, multiplier)} / ` : "";
+        const assignee = assigneeById(ruleForIngredient(ingredient.name)).label;
+        return `・${ingredient.name}: ${qty}${assignee}`;
+      }).join("\n");
+      setAgentAnswer(`${courseName}コース ${guests}名の目安`, `4人前基準で ${multiplier} 回分として計算します。\n\n${lines}\n\n発注画面では、必要に応じて${courseName}の数量を ${multiplier} に変更してください。`);
+    }
+
+    function answerLeafInventoryQuestion(text) {
+      const t = normalize(text);
+      const hasWholeStock = t.includes("ある") || t.includes("あり") || t.includes("1個") || t.includes("一個");
+      const multiplier = hasWholeStock ? 1 : 2;
+      setAgentAnswer("リーフの倍率判断", hasWholeStock
+        ? "メイン冷蔵庫以外に未使用がまるまる1個あるなら、リーフは1倍でよさそうです。\n発注画面でリーフの数量を1にしてください。"
+        : "未使用在庫がない、または在庫が少ない・未確認なら、安全策でリーフは2倍がよさそうです。\n発注画面でリーフの数量を2にしてください。");
+    }
+
+    function answerEggInventoryQuestion(text) {
+      const t = normalize(text);
+      const isZero = t.includes("0個") || t.includes("ゼロ") || t.includes("ない") || t.includes("無し");
+      const amount = isZero ? "7kg" : "5kg";
+      setAgentAnswer("卵の発注量", `卵の在庫が${isZero ? "0個" : "少し余裕あり"}なら、${amount} を発注目安にしてください。\n\n電話手順: 電話帳 ➔ びっくえっぐ ➔ 外線`);
+    }
+
+    function answerRoundingQuestion(text) {
+      const parsed = roundingQuantityFromText(text);
+      if (!parsed) return false;
+      const t = normalize(text);
+      const wantsOrderCount = t.includes("って") || t.includes("四捨五入") || t.includes("何個") || t.includes("何玉") || t.includes("何袋") || t.includes("すれば") || t.includes("でいい");
+      if (!wantsOrderCount) return false;
+      const unit = parsed.unit || "個";
+      const roundedLabel = `${parsed.rounded}${unit}`;
+      setAgentAnswer("端数の発注数", `${parsed.label} は四捨五入で ${roundedLabel} です。\n\nこのタイプの端数相談は、すべて四捨五入で判断します。`);
+      return true;
+    }
+
+    function answerGenericNegiQuestion(text) {
+      if (!isGenericNegiText(text)) return false;
+      const stock = quantityFromText(text);
+      if (!stock || stock.unit !== "足") return false;
+
+      const selectedLongNegi = materialUsage("長ネギ", true);
+      const longNegiUsages = selectedLongNegi.length ? selectedLongNegi : materialUsage("長ネギ", false);
+      const required = longNegiUsages
+        .map(item => footRequirementFromQty(item.qty))
+        .filter(value => value !== null)
+        .reduce((sum, value) => sum + value, 0);
+      if (!required) return false;
+
+      const shortage = Math.max(0, required - stock.value);
+      const sourceLabel = selectedLongNegi.length ? "選択中メニュー" : "登録メニュー全体";
+      const usageLines = longNegiUsages.map(item => `・${item.menu}: 長ネギ ${item.qty}`).join("\n");
+      const decision = shortage > 0
+        ? `結論: 長ネギはあと ${shortage}足 必要そうです。`
+        : "結論: 長ネギは登録数量だけで見れば足りそうです。";
+      setAgentAnswer("ネギの発注判断", `${decision}\n\nねぎまの長ネギは「10足合わせ」で見ます。\n現在庫は ${stock.label}、必要目安は ${required}足 です。\n\n${sourceLabel}での使用:\n${usageLines}\n\n白ネギは別で「1足で7本」目安です。白ネギについて聞く場合は「白ネギ1足ある」のように入力してください。`);
+      return true;
+    }
+
+    function answerStockQuestion(text, material) {
+      const stock = quantityFromText(text);
+      const originalDay = state.selectedDay;
+      const mentionedDay = dayFromText(text);
+      const effectiveDayIndex = mentionedDay >= 0 ? mentionedDay : (state.selectedDay === null ? new Date().getDay() : state.selectedDay);
+      const day = DAYS[effectiveDayIndex];
+      const assigneeId = ruleForIngredient(material);
+      const assignee = assigneeById(assigneeId);
+      const selectedUsages = materialUsage(material, true);
+      const usages = selectedUsages.length ? selectedUsages : materialUsage(material, false);
+      const usageLines = usages.length
+        ? usages.map(item => `・${item.menu}: ${material} ${item.qty}`).join("\n")
+        : "登録メニュー内で使用先が見つかりません。";
+      const sourceLabel = selectedUsages.length ? "選択中メニュー" : "登録メニュー全体";
+      const scheduled = isAssigneeScheduled(assigneeId, day);
+      const twoDay = day.twoDay.includes(assigneeId);
+
+      let decision = "結論: 発注候補として確認してください。";
+      let compareLine = "登録数量と在庫数の単位が合わないため、数値だけでの断定はできません。";
+
+      if (stock) {
+        const comparable = usages
+          .map(item => parseMenuQuantity(item.qty))
+          .filter(item => item && item.unit === stock.unit);
+        if (comparable.length) {
+          const required = comparable.reduce((sum, item) => sum + item.value, 0);
+          compareLine = `${sourceLabel}の登録数量合計は ${required}${stock.unit}、現在庫は ${stock.label} です。`;
+          decision = stock.value < required ? "結論: 発注した方がよさそうです。" : "結論: 登録数量だけで見れば、急ぎの発注は不要そうです。";
+        } else if (material === "白ネギ" && stock.unit === "足") {
+          compareLine = `現在庫は ${stock.label} です。白ネギは「1足で7本」目安なので、約${stock.value * 7}本分として見られます。`;
+          decision = selectedUsages.length ? "結論: 選択中メニューで使うため、ねぎま本数やすき焼き分を見て不足しそうなら村岡へ発注してください。" : "結論: 今日使うメニューを選択してから判断してください。選択中メニューに白ネギが入るなら発注候補です。";
+        } else if (material === "長ネギ" && stock.unit === "足") {
+          const required = usages
+            .map(item => footRequirementFromQty(item.qty))
+            .filter(value => value !== null)
+            .reduce((sum, value) => sum + value, 0);
+          if (required) {
+            const shortage = Math.max(0, required - stock.value);
+            compareLine = `${sourceLabel}の長ネギは「10足合わせ」目安です。必要目安は ${required}足、現在庫は ${stock.label} です。`;
+            decision = shortage > 0 ? `結論: あと ${shortage}足 必要そうです。` : "結論: 登録数量だけで見れば、急ぎの発注は不要そうです。";
+          } else {
+            compareLine = `現在庫は ${stock.label} と読み取りました。長ネギは、ねぎまでは「10足合わせ」目安です。`;
+            decision = "結論: 今日使うメニューを選択してから判断してください。";
+          }
+        } else {
+          compareLine = `現在庫は ${stock.label} と読み取りました。`;
+          decision = selectedUsages.length ? "結論: 選択中メニューで使う材料なので、少なければ発注候補です。" : "結論: 選択中メニューでは確認できません。今日使うメニューを選ぶと判断しやすくなります。";
+        }
+      }
+
+      const scheduleLine = scheduled
+        ? `${day.full}は【${assignee.label}】の確認対象です。${twoDay ? "しかも2日分発注です。" : ""}`
+        : `${day.full}は【${assignee.label}】の通常発注日ではありません。急ぎなら個別確認してください。`;
+
+      setAgentAnswer(`${material}の発注判断`, `${decision}\n\n${compareLine}\n${scheduleLine}\n\n${sourceLabel}での使用:\n${usageLines}`);
+      state.selectedDay = originalDay;
+    }
+
+    function answerTypedQuestion(text) {
+      const raw = String(text || "").trim();
+      if (!raw) {
+        setAgentAnswer("質問を入力してください", "例：明日すきやきコース16名なら？\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？");
+        return;
+      }
+
+      const originalDay = state.selectedDay;
+      const mentionedDay = dayFromText(raw);
+      if (mentionedDay >= 0) state.selectedDay = mentionedDay;
+
+      const t = normalize(raw);
+      const courseName = courseNameFromText(raw);
+      if (courseName && (t.includes("予約") || t.includes("コース") || t.includes("人") || t.includes("名"))) {
+        answerCourseQuestion(raw, courseName);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (answerRoundingQuestion(raw)) {
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (answerGenericNegiQuestion(raw)) {
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (t.includes("リーフ") && (t.includes("在庫") || t.includes("未使用") || t.includes("まるまる") || t.includes("1個") || t.includes("一個"))) {
+        answerLeafInventoryQuestion(raw);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (t.includes("卵") && (t.includes("在庫") || t.includes("0個") || t.includes("ゼロ") || t.includes("余裕") || t.includes("ない") || t.includes("無し"))) {
+        answerEggInventoryQuestion(raw);
+        state.selectedDay = originalDay;
+        return;
+      }
+      const material = materialFromText(raw);
+      if (material && (quantityFromText(raw) || t.includes("必要") || t.includes("足り") || t.includes("在庫") || t.includes("しかない") || t.includes("発注した方") || t.includes("発注必要"))) {
+        answerStockQuestion(raw, material);
+        state.selectedDay = originalDay;
+        return;
+      }
+      if (material && (t.includes("どこ") || t.includes("会社") || t.includes("発注") || t.includes("業者"))) {
+        answerMaterialQuestion(material);
+        state.selectedDay = originalDay;
+        return;
+      }
+
+      if (t.includes("共有")) answerAgentQuestion("share");
+      else if (t.includes("追加") || t.includes("新メニュー") || t.includes("登録")) answerAgentQuestion("addMenu");
+      else if (t.includes("土曜") || t.includes("土曜日")) answerAgentQuestion("saturday");
+      else if (t.includes("卵") || t.includes("電話")) answerAgentQuestion("egg");
+      else if (t.includes("買い出し") || t.includes("買出し")) answerAgentQuestion("buying");
+      else if (t.includes("2日") || t.includes("二日")) answerAgentQuestion("twoDay");
+      else if (t.includes("選択中") || t.includes("メニュー") || t.includes("材料")) answerAgentQuestion("selectedOrders");
+      else if (t.includes("会社") || t.includes("業者") || t.includes("発注")) answerAgentQuestion("vendors");
+      else {
+        setAgentAnswer("回答できる質問の例", "この相談機能は発注業務だけに回答します。\n\n例：明日すきやきコース16名なら？\n例：今白ネギが5足しかないけど発注必要？\n例：きゅうりが6本あるけど足りる？\n例：月曜日の発注会社は？\n例：今日は2日分ある？\n例：共有データの使い方は？");
+      }
+
+      state.selectedDay = originalDay;
+    }
+
+    function answerAgentQuestion(type) {
+      const day = selectedDayOrMessage();
+      if (["vendors", "twoDay", "selectedOrders", "buying", "egg"].includes(type) && !day) {
+        setAgentAnswer("曜日を選択してください", "発注画面で曜日を選ぶと、その曜日に合わせて回答できます。");
+        return;
+      }
+
+      if (type === "vendors") {
+        const labels = day.vendors.map(id => assigneeById(id).label).join("、") || "業者発注なし";
+        setAgentAnswer(`${day.full}の発注会社`, `${labels}\n\n買い出し項目は、選択したメニューに含まれている場合だけ表示されます。`);
+        return;
+      }
+
+      if (type === "twoDay") {
+        const labels = day.twoDay.map(id => assigneeById(id).label.replace("（びっぐえっぐ）", "")).join("、");
+        setAgentAnswer(`${day.full}の2日分発注`, labels ? `本日は、【${labels}】が2日分発注です。` : "この曜日に2日分発注の会社はありません。");
+        return;
+      }
+
+      if (type === "selectedOrders") {
+        const selected = effectiveSelectedMenuIds();
+        if (!selected.length) {
+          setAgentAnswer("料理・仕込みを選択してください", "発注画面で料理や仕込みを選ぶと、会社ごとの発注内容を回答できます。");
+          return;
+        }
+        const groups = visibleGroups();
+        setAgentAnswer("選択中メニューの発注内容", groups.length ? formatGroupLines(groups) : "選択中メニューで、この曜日に発注する項目はありません。");
+        return;
+      }
+
+      if (type === "buying") {
+        const selected = effectiveSelectedMenuIds();
+        if (!selected.length) {
+          setAgentAnswer("料理・仕込みを選択してください", "買い出し項目は、選んだ料理・仕込みに含まれる場合だけ表示されます。");
+          return;
+        }
+        const buyGroup = visibleGroups().find(group => group.assignee === "buy");
+        setAgentAnswer("当日の買い出し", buyGroup?.items.length ? formatGroupLines([buyGroup]) : "選択中メニューに買い出し項目はありません。");
+        return;
+      }
+
+      if (type === "egg") {
+        setAgentAnswer("卵の電話発注", "卵は「卵（びっぐえっぐ）」として表示されます。\nアプリ内の卵欄を確認し、電話で「お疲れ様です。きばり屋です。卵の発注をお願いします。」と伝える運用です。");
+        return;
+      }
+
+      if (type === "share") {
+        setAgentAnswer("共有データの使い方", "1. メニュー管理を開く\n2. 共有の「共有データをコピー」を押す\n3. LINEなどで送る\n4. 受け取った側は共有欄へ貼り付ける\n5. 「貼り付けたデータを取り込む」を押す\n\n共有されるのはメニュー、材料ごとの発注会社、追加した発注会社です。");
+        return;
+      }
+
+      if (type === "addMenu") {
+        setAgentAnswer("新メニュー追加の流れ", "1. メニュー管理を開く\n2. 料理名・仕込み名を入力\n3. 材料名、数量、発注会社を入力\n4. 必要なら材料行を追加\n5. 保存を押す\n6. 確認が出たら共有データをコピーして共有します。");
+        return;
+      }
+
+      if (type === "saturday") {
+        setAgentAnswer("土曜日の確認", "土曜日は業者発注なしです。\n発注画面では、買い出し・店長連絡のみ確認してください。");
+      }
+    }
+
+    function answerMaterialQuestion(material) {
+      const assignee = assigneeById(ruleForIngredient(material));
+      const label = assignee.id === "unknown" ? "未分類確認" : assignee.label;
+      setAgentAnswer(`${material}の発注先`, `「${material}」は【${label}】で確認します。`);
+    }
+
+    function switchScreen(screen) {
+      state.activeScreen = screen;
+      localStorage.setItem(STORAGE_KEYS.activeScreen, screen);
+      applyScreenVisibility();
+      renderAppShell();
+      renderNav();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderNav() {
+      document.getElementById("toOrder").classList.toggle("active", state.activeScreen === "order");
+      document.getElementById("toAgent").classList.toggle("active", state.activeScreen === "agent");
+      document.getElementById("toManage").classList.toggle("active", state.activeScreen === "manage");
+    }
+
+    let toastTimer = null;
+    function toast(message) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function askConfirm(title, body) {
+      const modal = document.getElementById("confirmModal");
+      const titleEl = document.getElementById("confirmTitle");
+      const bodyEl = document.getElementById("confirmBody");
+      const okBtn = document.getElementById("confirmOkBtn");
+      const cancelBtn = document.getElementById("confirmCancelBtn");
+      titleEl.textContent = title;
+      bodyEl.textContent = body;
+      modal.hidden = false;
+      okBtn.focus();
+      return new Promise(resolve => {
+        const close = value => {
+          modal.hidden = true;
+          okBtn.removeEventListener("click", onOk);
+          cancelBtn.removeEventListener("click", onCancel);
+          modal.removeEventListener("click", onBackdrop);
+          document.removeEventListener("keydown", onKeydown);
+          resolve(value);
+        };
+        const onOk = () => close(true);
+        const onCancel = () => close(false);
+        const onBackdrop = event => {
+          if (event.target === modal) close(false);
+        };
+        const onKeydown = event => {
+          if (event.key === "Escape") close(false);
+        };
+        okBtn.addEventListener("click", onOk);
+        cancelBtn.addEventListener("click", onCancel);
+        modal.addEventListener("click", onBackdrop);
+        document.addEventListener("keydown", onKeydown);
+      });
+    }
+
+    function goInitialOrderScreen() {
+      state.selectedDay = null;
+      state.selectedDate = localDateIso(new Date());
+      switchScreen("home");
+      render();
+    }
+
+    let pullStartY = 0;
+    document.addEventListener("touchstart", event => {
+      pullStartY = event.touches[0]?.clientY || 0;
+    }, { passive: true });
+    document.addEventListener("touchmove", event => {
+      const currentY = event.touches[0]?.clientY || 0;
+      const pullingDownAtTop = window.scrollY <= 0 && currentY > pullStartY;
+      if (pullingDownAtTop) event.preventDefault();
+    }, { passive: false });
+
+    document.getElementById("appHomeHeader").addEventListener("click", () => {
+      goInitialOrderScreen();
+      toast("ホームに戻りました");
+    });
+    document.getElementById("appHomeHeader").addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      goInitialOrderScreen();
+      toast("ホームに戻りました");
+    });
+
+    document.getElementById("resetChecksBtn").addEventListener("click", () => {
+      const prefix = `date:${state.selectedDate}|`;
+      Object.keys(state.checks).forEach(key => {
+        if (key.startsWith(prefix)) delete state.checks[key];
+      });
+      document.querySelectorAll("#taskList .check").forEach(input => {
+        delete state.checks[checkKey(state.selectedDate, input.dataset.item)];
+        input.checked = false;
+      });
+      delete state.selectedMenus[state.selectedDate];
+      delete state.menuMultipliers[state.selectedDate];
+      save(STORAGE_KEYS.checks, state.checks);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      renderOrder();
+      toast("チェックと選択を解除しました");
+    });
+    document.getElementById("completeOrderBtn").addEventListener("click", () => {
+      const date = state.selectedDate;
+      const prefix = `date:${date}|`;
+      Object.keys(state.checks).forEach(key => {
+        if (key.startsWith(prefix)) delete state.checks[key];
+      });
+      delete state.selectedMenus[date];
+      delete state.menuMultipliers[date];
+      save(STORAGE_KEYS.checks, state.checks);
+      save(STORAGE_KEYS.selectedMenus, state.selectedMenus);
+      save(STORAGE_KEYS.menuMultipliers, state.menuMultipliers);
+      goInitialOrderScreen();
+      toast("発注を完了しました");
+    });
+
+    document.getElementById("openExistingFeatureCard").addEventListener("click", () => {
+      switchScreen("order");
+      render();
+    });
+
+    document.getElementById("addIngredientBtn").addEventListener("click", () => addIngredientRow());
+    document.getElementById("saveMenuBtn").addEventListener("click", saveMenuFromForm);
+    document.getElementById("clearFormBtn").addEventListener("click", clearMenuForm);
+    document.getElementById("newMenuBtn").addEventListener("click", clearMenuForm);
+    document.getElementById("saveCompanyBtn").addEventListener("click", saveCompanyFromForm);
+    document.getElementById("clearCompanyBtn").addEventListener("click", clearCompanyForm);
+    document.getElementById("newCompanyBtn").addEventListener("click", clearCompanyForm);
+    document.getElementById("toggleMenuListBtn").addEventListener("click", () => toggleManageSection("menus"));
+    document.getElementById("toggleCompanyListBtn").addEventListener("click", () => toggleManageSection("companies"));
+    document.getElementById("selectMenuModeBtn").addEventListener("click", startMenuSelectionMode);
+    document.getElementById("bulkDeleteMenusBtn").addEventListener("click", deleteSelectedMenus);
+    document.getElementById("cancelMenuSelectBtn").addEventListener("click", cancelMenuSelectionMode);
+    document.getElementById("copyShareDataBtn").addEventListener("click", () => {
+      copyText(sharedDataText())
+        .then(() => toast("共有データをコピーしました"))
+        .catch(() => toast("コピーできませんでした。文字を手動でコピーしてください"));
+    });
+    document.getElementById("importShareDataBtn").addEventListener("click", () => {
+      const input = document.getElementById("shareImportText");
+      try {
+        applySharedPayload(payloadFromSharedText(input.value));
+        migrateStoredData({ imported: true });
+        input.value = "";
+        switchScreen("manage");
+        render();
+        toast("共有データを取り込みました");
+      } catch (error) {
+        toast("取り込めませんでした。共有データが途中で欠けていないか確認してください");
+      }
+    });
+    document.getElementById("toOrder").addEventListener("click", () => switchScreen("order"));
+    document.getElementById("toAgent").addEventListener("click", () => switchScreen("agent"));
+    document.getElementById("toManage").addEventListener("click", () => switchScreen("manage"));
+
+    const importedSharedData = applySharedDataFromUrl();
+    migrateStoredData({ imported: importedSharedData === true });
+    render();
+    if (importedSharedData === true) {
+      switchScreen("manage");
+      toast("共有データを取り込みました");
+    } else if (importedSharedData === "error") {
+      toast("共有リンクを読み込めませんでした。データが途中で欠けている可能性があります");
+    }
+  </script>
+</body>
+</html>

@@ -1494,7 +1494,8 @@
       menuMultipliers: "kibariya.menuMultipliers.v1",
       orderSettings: "kibariya.orderSettings.v1",
       companies: "kibariya.companies.v1",
-      activeScreen: "kibariya.activeScreen.v1"
+      activeScreen: "kibariya.activeScreen.v1",
+      silkenTofuMigrated: "kibariya.silkenTofuMigrated.v1"
     };
 
     const VALID_SCREENS = ["home", "order", "agent", "manage"];
@@ -1515,7 +1516,7 @@
     const BASE_VENDOR_IDS = ["muraoka","nabata","nishihara","rikaman","ogawa","egg"];
 
     const DEFAULT_RULES = [
-      ...["キャベツ","えのき","春菊","白菜","白ネギ","舞茸","サニーレタス","水菜","赤パプ","黄パプ","緑かいわれ","桜かいわれ","茗荷","細ネギ","長ネギ","きゅうり","長芋"].map(material => ({ id: uid(), material, assignee: "muraoka" })),
+      ...["キャベツ","えのき","春菊","白菜","白ネギ","舞茸","サニーレタス","水菜","赤パプ","黄パプ","緑かいわれ","桜かいわれ","茗荷","細ネギ","長ネギ","きゅうり","長芋","絹豆腐"].map(material => ({ id: uid(), material, assignee: "muraoka" })),
       ...["豆腐","クリームチーズ","豆乳","やくみみそ","上新粉","小麦粉"].map(material => ({ id: uid(), material, assignee: "nabata" })),
       ...["うんぜんはむ","えび","ポテト"].map(material => ({ id: uid(), material, assignee: "nishihara" })),
       ...["コーラ","ジンジャエール","レモンサワー","ビールの生樽"].map(material => ({ id: uid(), material, assignee: "rikaman" })),
@@ -1526,8 +1527,8 @@
     ];
 
     const DEFAULT_MENUS = [
-      menu("水炊き", [["キャベツ","1/4玉"],["えのき","1/2袋"],["春菊","1"],["豆腐","1丁"],["舞茸","1"],["しらたき","1個"],["油揚げ","1枚"]]),
-      menu("すき焼き", [["白菜",""],["白ネギ",""],["舞茸",""],["春菊",""],["糸蒟蒻",""],["豆腐",""]]),
+      menu("水炊き", [["キャベツ","1/4玉"],["えのき","1/2袋"],["春菊","1"],["絹豆腐","1丁"],["舞茸","1"],["しらたき","1個"],["油揚げ","1枚"]]),
+      menu("すき焼き", [["白菜",""],["白ネギ",""],["舞茸",""],["春菊",""],["糸蒟蒻",""],["絹豆腐",""]]),
       menu("リーフ（サラダ）", [["サニーレタス","1"],["水菜","1"],["赤パプ","1"],["黄パプ","1"]]),
       menu("やくみ（薬味）", [["緑かいわれ","3"],["桜かいわれ","2"],["茗荷","3"]]),
       menu("ねぎま", [["白ネギ","1足で7本"],["長ネギ","10足合わせ"]]),
@@ -1560,6 +1561,7 @@
       "きゅうり": ["胡瓜", "キュウリ"],
       "しいたけ": ["椎茸", "シイタケ"],
       "豆腐": ["とうふ", "トウフ"],
+      "絹豆腐": ["絹とうふ", "絹ごし豆腐", "絹ごしとうふ", "きぬどうふ", "きぬとうふ"],
       "卵": ["玉子", "たまご", "タマゴ"],
       "糸蒟蒻": ["糸こんにゃく", "糸こん", "イトコン"],
       "しらたき": ["白滝", "シラタキ"],
@@ -1940,7 +1942,7 @@
       }
 
       const hashIndex = value.indexOf("#");
-      if (hashIndex >= 0) return payloadFromSharedText(value.slice(hashIndex));
+      if (hashIndex > 0) return payloadFromSharedText(value.slice(hashIndex));
 
       if (value.startsWith("#k=")) return decodeSharePayload(value.slice(3));
       if (value.startsWith("KIBARIYA1.")) return decodeSharePayload(value.slice("KIBARIYA1.".length));
@@ -2000,7 +2002,7 @@
       return Promise.resolve();
     }
 
-    function migrateStoredData() {
+    function migrateStoredData({ imported = false } = {}) {
       const shiitake = state.rules.find(rule => normalize(rule.material) === normalize("しいたけ"));
       if (shiitake) shiitake.assignee = "muraoka";
       else state.rules.unshift({ id: uid(), material: "しいたけ", assignee: "muraoka" });
@@ -2020,6 +2022,22 @@
       if (!menuByName("手羽唐")) {
         state.menus.push(menu("手羽唐", [["上新粉","在庫確認"],["小麦粉","在庫確認"]]));
         save(STORAGE_KEYS.menus, state.menus);
+      }
+      const hasSilkenTofuRule = state.rules.some(rule => normalize(rule.material) === normalize("絹豆腐"));
+      // Apply once to existing data; also accept older shared data after updating.
+      if (!readJson(STORAGE_KEYS.silkenTofuMigrated, false) || (imported && !hasSilkenTofuRule)) {
+        state.menus.forEach(menuItem => {
+          if (!["水炊き", "すき焼き"].includes(normalize(menuItem.name))) return;
+          menuItem.ingredients.forEach(ingredient => {
+            if (nameCandidates("豆腐").some(name => normalize(ingredient.name) === normalize(name))) {
+              ingredient.name = "絹豆腐";
+            }
+          });
+        });
+        upsertMaterialRule("絹豆腐", "muraoka");
+        save(STORAGE_KEYS.menus, state.menus);
+        save(STORAGE_KEYS.rules, state.rules);
+        save(STORAGE_KEYS.silkenTofuMigrated, true);
       }
       save(STORAGE_KEYS.rules, state.rules);
     }
@@ -3140,7 +3158,7 @@
       const input = document.getElementById("shareImportText");
       try {
         applySharedPayload(payloadFromSharedText(input.value));
-        migrateStoredData();
+        migrateStoredData({ imported: true });
         input.value = "";
         switchScreen("manage");
         render();
@@ -3154,7 +3172,7 @@
     document.getElementById("toManage").addEventListener("click", () => switchScreen("manage"));
 
     const importedSharedData = applySharedDataFromUrl();
-    migrateStoredData();
+    migrateStoredData({ imported: importedSharedData === true });
     render();
     if (importedSharedData === true) {
       switchScreen("manage");
